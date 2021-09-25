@@ -3,6 +3,8 @@ import Dependencies._
 // Run update task to verify dependencies are good
 // conflictManager := ConflictManager.strict
 
+// TODO tpolecat and no fatal warning
+
 Global / onChangedBuildSource := ReloadOnSourceChanges
 
 onLoad in Global ~= (_.compose(s => "dependencyUpdates" :: s))
@@ -18,8 +20,8 @@ addCommandAlias(
 lazy val commonSettings = {
   lazy val acyclicSettins = Seq(
     autoCompilerPlugins := true,
-    libraryDependencies += "com.lihaoyi" %% "acyclic" % "0.2.0" % "provided",
-    addCompilerPlugin("com.lihaoyi" %% "acyclic" % "0.2.0")
+    libraryDependencies += "com.lihaoyi" %% "acyclic" % "0.2.1" % "provided",
+    addCompilerPlugin("com.lihaoyi" %% "acyclic" % "0.2.1")
   )
 
   lazy val flags = Seq(
@@ -46,20 +48,20 @@ lazy val commonSettings = {
     // TODO remove filterNot Any
     wartremoverErrors in (Compile, compile) := Warts.unsafe.filterNot(Seq(Wart.Any).contains(_)),
     addCompilerPlugin("com.olegpy" %% "better-monadic-for" % "0.3.1"),
-    addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.11.0" cross CrossVersion.full),
-    addCompilerPlugin(
-      scalafixSemanticdb("4.3.24")
-    ), // TODO version number manual workaround for https://github.com/scalacenter/scalafix/issues/1109
+    addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.13.2" cross CrossVersion.full),
+    /* addCompilerPlugin( */
+      /* scalafixSemanticdb("4.3.24") */
+    /* ), // TODO version number manual workaround for https://github.com/scalacenter/scalafix/issues/1109 */
     libraryDependencies ++= Seq(
       // Standard lib
-      "org.typelevel" %%% "cats-core" % "2.2.0",
-      "org.typelevel" %%% "cats-effect" % "2.2.0",
+      "org.typelevel" %%% "cats-core" % "2.6.1",
+      "org.typelevel" %%% "cats-effect" % "2.5.4",
       // serialization
       "io.circe" %%% "circe-core" % circeVersion,
       "io.circe" %%% "circe-generic" % circeVersion,
-      "io.circe" %%% "circe-generic-extras" % "0.13.0",
-      "io.circe" %%% "circe-derivation" % "0.13.0-M4",
-      "io.circe" %%% "circe-derivation-annotations" % "0.13.0-M4",
+      "io.circe" %%% "circe-generic-extras" % circeVersion,
+      "io.circe" %%% "circe-derivation" % "0.13.0-M5",
+      "io.circe" %%% "circe-derivation-annotations" % "0.13.0-M5",
       "io.circe" %%% "circe-parser" % circeVersion,
       // State
       "co.fs2" %%% "fs2-core" % fs2Version,
@@ -77,7 +79,7 @@ lazy val root = (project in file("."))
     inThisBuild(
       List(
         organization := "no.perok",
-        scalaVersion := "2.13.3",
+        scalaVersion := "2.13.6",
         version := "0.1.0-SNAPSHOT"
       )
     ),
@@ -113,8 +115,8 @@ lazy val frontend = (project in file("modules/frontend"))
       // "com.github.japgolly.scalajs-react" %%% "ext-monocle-cats" % scalaJsReact,
       // "com.github.japgolly.scalajs-react" %%% "ext-cats" % scalaJsReact,
       // TODO not yet released for scala.js 1.0
-      "com.olegpy" %%% "shironeko-core" % "0.1.0-RC5",
-      "com.olegpy" %%% "shironeko-slinky" % "0.1.0-RC5",
+      /* "com.olegpy" %%% "shironeko-core" % "0.1.0-RC5", */
+      /* "com.olegpy" %%% "shironeko-slinky" % "0.1.0-RC5", */
       "me.shadaj" %%% "slinky-core" % "0.6.6",
       "me.shadaj" %%% "slinky-web" % "0.6.6"
     ),
@@ -156,9 +158,7 @@ lazy val backend = (project in file("modules/backend"))
   .settings(
     //scalacOptions ++= Seq("-Ybackend-parallelism", "4"),
     Defaults.itSettings,
-    libraryDependencies ++= backendDependencies ++ Seq(
-      //      "com.outr" %% "scribe-slf4j" % "2.5.1"
-    ),
+    libraryDependencies ++= backendDependencies,
     fork in Test := true,
     // Uncomment the following lines to specify a configuration file to load
     javaOptions in Test := Seq("-Dconfig.resource=test.conf"),

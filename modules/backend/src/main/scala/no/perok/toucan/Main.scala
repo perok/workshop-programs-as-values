@@ -30,6 +30,7 @@ object Main extends IOApp {
     program[IO].flatMap(_.compile.drain.as(ExitCode.Success))
   }
 
+  // TODO Resource
   def program[F[_]: ConcurrentEffect: ContextShift: Timer]: F[Stream[F, ExitCode]] =
     for {
       settings <- Config[F](blocker)
@@ -69,14 +70,7 @@ object Main extends IOApp {
     //
     val authenticationServices = new AuthenticationEndpoint(userInterpreter, settings)
 
-    val apiServices: HttpRoutes[F] = {
-      val troopService: HttpRoutes[F] = authenticationServices.middleware(
-        new TroopEndpoint(handler, troopInterpreter, voteInterpreter).endpoints
-      )
-      val movieService: HttpRoutes[F] = new MovieEndpoint(new MovieInterpreter(xa, client)).service
-
-      troopService <+> movieService
-    }
+    val apiServices: HttpRoutes[F] =  ???
 
     val routes = Router(
       ("/api/auth", authenticationServices.authenticationHttp),

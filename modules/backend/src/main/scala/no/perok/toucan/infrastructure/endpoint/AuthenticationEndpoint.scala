@@ -76,7 +76,7 @@ class AuthenticationEndpoint[F[_]: Effect](userAlgebra: UserAlgebra[F], settings
         .map(_.flatMap(_.toRight("No User")))
     })
 
-  private val onFailure: Kleisli[OptionT[F, ?], AuthedRequest[F, String], Response[F]] = ???
+  private val onFailure: Kleisli[OptionT[F, *], AuthedRequest[F, String], Response[F]] = ???
   //Kleisli(req => OptionT.liftF(Forbidden(req.authInfo)))
 
   private val errorHandler: PartialFunction[Throwable, F[Response[F]]] = {
