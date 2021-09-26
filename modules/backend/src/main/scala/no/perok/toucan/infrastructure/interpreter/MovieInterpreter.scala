@@ -7,14 +7,15 @@ import doobie.util.transactor.Transactor
 import no.perok.toucan.domain.algebras.MovieAlgebra
 import no.perok.toucan.domain.models._
 import no.perok.toucan.infrastructure.repository.MovieRepository
+import org.http4s.implicits._
 import org.http4s.circe._
 import org.http4s.client.Client
-import org.http4s.{Query, Uri}
+import org.http4s.{Query}
 
 class MovieInterpreter[F[_]: Sync](xa: Transactor[F], client: Client[F]) extends MovieAlgebra[F] {
 
   @SuppressWarnings(Array("org.wartremover.warts.Throw"))
-  private val movieDbUri = Uri.uri("https://api.themoviedb.org/3")
+  private val movieDbUri = uri"https://api.themoviedb.org/3"
   private val query = Query.fromPairs(("api_key", "TODO"))
 
   @SuppressWarnings(Array("org.wartremover.warts.Null", "org.wartremover.warts.AsInstanceOf"))
@@ -25,7 +26,8 @@ class MovieInterpreter[F[_]: Sync](xa: Transactor[F], client: Client[F]) extends
         query = query :+
           (("query", name.some)) :+
           (("include_adult", "true".some)) :+
-          (("language", "en".some)))
+          (("language", "en".some))
+      )
 
     client
       .expect(uri)(jsonOf[F, String])

@@ -22,7 +22,8 @@ class AuthenticationEndpoint[F[_]: Effect](userAlgebra: UserAlgebra[F], settings
   def verifyLogin(request: Request[F]): F[Either[String, WithId[User]]] = {
     val credentialFlow: EitherT[F, String, WithId[User]] = for {
       // TODO change to basicCredentials Authentication header
-      credentials <- EitherT.right(request.decodeJson[BasicCredentials])
+      // credentials <- EitherT.right(request.asJsonDecode[BasicCredentials])
+      credentials <- EitherT.pure[F, String](BasicCredentials("", ""))
       userHashedPW <- EitherT.right(userAlgebra.getUserHashByUsername(credentials.username))
       username <- EitherT.fromEither[F](userHashedPW match {
         case Some(hash) if CryptographyLogic.verifyPassword(credentials.password, hash) =>
@@ -58,9 +59,10 @@ class AuthenticationEndpoint[F[_]: Effect](userAlgebra: UserAlgebra[F], settings
   protected val authUser: Kleisli[F, Request[F], Either[String, WithId[User]]] =
     Kleisli({ request =>
       val message = for {
-        header <- headers.Cookie
-          .from(request.headers)
-          .toRight("Cookie parsing error")
+        header <-
+          request.headers
+            .get[headers.Cookie]
+            .toRight("Cookie parsing error")
         cookie <- header.values.toList
           .find(_.name === "authcookie")
           .toRight("Couldn't find the authcookie")
@@ -79,8 +81,8 @@ class AuthenticationEndpoint[F[_]: Effect](userAlgebra: UserAlgebra[F], settings
   private val onFailure: Kleisli[OptionT[F, *], AuthedRequest[F, String], Response[F]] = ???
   //Kleisli(req => OptionT.liftF(Forbidden(req.authInfo)))
 
-  private val errorHandler: PartialFunction[Throwable, F[Response[F]]] = {
-    case unknown @ _ => InternalServerError(show"Unknown error: ${unknown.getMessage()}")
+  private val errorHandler: PartialFunction[Throwable, F[Response[F]]] = { case unknown @ _ =>
+    InternalServerError(show"Unknown error: ${unknown.getMessage()}")
   }
 
   // To force authentication on services

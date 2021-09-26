@@ -29,7 +29,7 @@ package object endpoint {
   implicit val userEncoder: Encoder[User] = deriveEncoder
   implicit val userDecoder: Decoder[User] = deriveDecoder
 
-  implicit val basicCredentialsDecoder: Decoder[BasicCredentials] = deriveDecoder
+  // implicit val basicCredentialsDecoder: Decoder[BasicCredentials] = deriveDecoder
 
   implicit val newUserFormDecoder: Decoder[NewUserForm] = deriveDecoder
 

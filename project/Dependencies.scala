@@ -2,7 +2,7 @@ import sbt._
 //import org.portablescala.sbtplatformdeps.PlatformDepsPlugin.autoImport._
 
 object Dependencies {
-  val http4sVersion = "0.21.29"
+  val http4sVersion = "0.22.5"
   val doobieVersion = "0.13.4"
   val circeVersion = "0.14.1"
   // val scalaJsReact = "1.4.2"
@@ -24,8 +24,7 @@ object Dependencies {
       Seq("org.flywaydb" % "flyway-core" % "7.15.0")
 
     val crypto: Seq[ModuleID] = Seq(
-      "com.pauldijou" %% "jwt-core" % "5.0.0",
-      "com.pauldijou" %% "jwt-circe" % "5.0.0",
+      "com.github.jwt-scala" %% "jwt-circe" % "9.0.1",
       "org.mindrot" % "jbcrypt" % "0.4"
     )
 

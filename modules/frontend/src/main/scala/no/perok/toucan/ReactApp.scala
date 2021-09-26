@@ -6,8 +6,7 @@ import cats.effect._
 import fs2.Stream
 import cats._, cats.syntax.all._
 
-
-object ReactApp extends IOApp {
+object ReactApp extends IOApp.Simple {
   @JSImport("Sources/scss/main.scss", JSImport.Default)
   @js.native
   object assets extends js.Object
@@ -32,10 +31,10 @@ object ReactApp extends IOApp {
     ()
   }
 
-  def run(args: List[String]): IO[ExitCode] = {
+  def run = {
     require()
     UIKit.use(UIKitIcons)
     UIKit.notification("UIKit loaded")
-    IO.pure(ExitCode.Success)
+    IO.unit
   }
 }

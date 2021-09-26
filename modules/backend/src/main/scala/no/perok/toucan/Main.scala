@@ -8,8 +8,8 @@ import fs2.Stream
 import org.http4s._
 import org.http4s.implicits._
 import org.http4s.server.Router
-import org.http4s.server.blaze._
-import org.http4s.client.blaze.BlazeClientBuilder
+import org.http4s.blaze.server._
+import org.http4s.blaze.client.BlazeClientBuilder
 import org.http4s.client.Client
 import doobie.Transactor
 import no.perok.toucan.config.{Config, DBConfig}
@@ -70,7 +70,7 @@ object Main extends IOApp {
     //
     val authenticationServices = new AuthenticationEndpoint(userInterpreter, settings)
 
-    val apiServices: HttpRoutes[F] =  ???
+    val apiServices: HttpRoutes[F] = ???
 
     val routes = Router(
       ("/api/auth", authenticationServices.authenticationHttp),
