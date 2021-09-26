@@ -32,31 +32,32 @@ inThisBuild(
     // TODO remove filterNot Any
     Compile / compile / wartremoverErrors := Warts.unsafe.filterNot(Seq(Wart.Any).contains(_)),
     addCompilerPlugin("com.olegpy" %% "better-monadic-for" % "0.3.1"),
-    addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.13.2" cross CrossVersion.full),
+    addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.13.2" cross CrossVersion.full)
     /* addCompilerPlugin( */
     // semanticdbEnabled := true, // enable Semantic
     // semanticdbVersion := scalafixSemanticdb.revision
     /* ), // TODO version number manual workaround for https://github.com/scalacenter/scalafix/issues/1109 */
-    libraryDependencies ++= Seq(
-      // Standard lib
-      "org.typelevel" %%% "cats-core" % "2.6.1",
-      "org.typelevel" %%% "cats-effect" % "3.2.9",
-      "co.fs2" %%% "fs2-core" % fs2Version,
-      // serialization
-      "io.circe" %%% "circe-core" % circeVersion,
-      "io.circe" %%% "circe-generic" % circeVersion, // TODO delete
-      "io.circe" %%% "circe-generic-extras" % circeVersion, // TODO delete
-      "io.circe" %%% "circe-derivation" % "0.13.0-M5",
-      "io.circe" %%% "circe-derivation-annotations" % "0.13.0-M5",
-      "io.circe" %%% "circe-parser" % circeVersion,
-      // TODO bump 3.0
-      "com.github.julien-truffaut" %%% "monocle-core" % monocleVersion,
-      "com.github.julien-truffaut" %%% "monocle-macro" % monocleVersion
-    )
   )
 )
 
 val settingsOvveride = Seq(
+  // TODO this does not work for inThisBuild
+  libraryDependencies ++= Seq(
+    // Standard lib
+    "org.typelevel" %%% "cats-core" % "2.6.1",
+    "org.typelevel" %%% "cats-effect" % "3.2.9",
+    "co.fs2" %%% "fs2-core" % fs2Version,
+    // serialization
+    "io.circe" %%% "circe-core" % circeVersion,
+    "io.circe" %%% "circe-generic" % circeVersion, // TODO delete
+    "io.circe" %%% "circe-generic-extras" % circeVersion, // TODO delete
+    "io.circe" %%% "circe-derivation" % "0.13.0-M5",
+    "io.circe" %%% "circe-derivation-annotations" % "0.13.0-M5",
+    "io.circe" %%% "circe-parser" % circeVersion,
+    // TODO bump 3.0
+    "com.github.julien-truffaut" %%% "monocle-core" % monocleVersion,
+    "com.github.julien-truffaut" %%% "monocle-macro" % monocleVersion
+  ),
   // Disable fatal warning from sbt-tpolecat plugin when developing
   Test / scalacOptions -= "-Xfatal-warnings",
   scalacOptions --= {
@@ -95,10 +96,12 @@ lazy val backend = (project in file("modules/backend"))
     Test / fork := true,
     // Uncomment the following lines to specify a configuration file to load
     Test / javaOptions := Seq("-Dconfig.resource=test.conf"),
-    // TODO TODO TODO hvorfor scala.js stuff her?
-    // TODO alt under her er utestet
+    // Support stopping the running server
+    reStart / mainClass := Some("no.perok.toucan.Main"),
+    // Setup scala.js bundler integration. Access of build artifacts and
+    // development compile reloading
     scalaJSProjects := Seq(frontend),
-    Assets / pipelineStages := Seq(scalaJSPipeline),
+    pipelineStages := Seq(scalaJSPipeline),
     //compile in Compile := ((compile in Compile) dependsOn scalaJSPipeline).value,
     //pipelineStages := Seq(digest, gzip),
     // TODO burdde disse to være i frontend prosjektet?
@@ -121,9 +124,7 @@ lazy val backend = (project in file("modules/backend"))
     // do a fastOptJS on reStart
     reStart := (reStart dependsOn ((frontend / Compile / fastOptJS))).evaluated,
     // This settings makes reStart to rebuild if a scala.js file changes on the client
-    watchSources ++= (frontend / watchSources).value,
-    // Support stopping the running server
-    reStart / mainClass := Some("no.perok.toucan.Main")
+    watchSources ++= (frontend / watchSources).value
   )
 
 lazy val shared = (crossProject(JSPlatform, JVMPlatform)
@@ -177,11 +178,9 @@ lazy val frontend = (project in file("modules/frontend"))
       "css-loader" -> "1.0.1",
       "sass-loader" -> "10.2.0",
       "sass" -> "1.42.1"
-      /* "node-sass" -> "4.13.1" */
     ),
     /* Frontend compilation settings */
     Compile / packageJSDependencies / crossTarget := (Compile / resourceManaged).value,
-    //webpackBundlingMode := BundlingMode.LibraryOnly(),
     // emitSourceMaps := false, //TODO outcommented because of scalajs-bundler update
     webpackExtraArgs := Seq("--mode=development"),
     // For index.html i root mappa
