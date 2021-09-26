@@ -1,8 +1,8 @@
 package no.perok.toucan.config
 
-import com.comcast.ip4s.Port
+import com.comcast.ip4s._
 
 object TestSettings {
   def apply(): Config =
-    Config("", "", Server(Port.fromInt(1).get), DB("", "", ""))
+    Config("", "", Server(port"1"), DB("", "", ""))
 }

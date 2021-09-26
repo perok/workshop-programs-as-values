@@ -3,9 +3,10 @@ import sbt._
 
 object Dependencies {
   val http4sVersion = "0.23.4"
+  val tapirVersion = "0.19.0-M10"
   val doobieVersion = "1.0.0-RC1"
   val circeVersion = "0.14.1"
-  // val scalaJsReact = "1.4.2"
+  val scalaJsReact = "2.0.0-RC3"
   val monocleVersion = "3.1.0"
   val fs2Version = "3.1.3"
   val testcontainersScalaVersion = "0.39.8"
@@ -16,9 +17,12 @@ object Dependencies {
       "org.http4s" %% "http4s-circe",
       "org.http4s" %% "http4s-ember-server",
       "org.http4s" %% "http4s-ember-client"
-    ).map(_ % http4sVersion)
+    ).map(_ % http4sVersion) ++ Seq(
+      "com.softwaremill.sttp.tapir" %% "tapir-http4s-server" % tapirVersion
+    )
 
     val database: Seq[ModuleID] = Seq(
+      // TODO https://github.com/tpolecat/skunk
       "org.tpolecat" %% "doobie-core",
       "org.tpolecat" %% "doobie-postgres"
     ).map(_ % doobieVersion) ++

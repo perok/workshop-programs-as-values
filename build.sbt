@@ -1,13 +1,8 @@
 import Dependencies._
 
-// Run update task to verify dependencies are good
-// conflictManager := ConflictManager.strict
-
 Global / onChangedBuildSource := ReloadOnSourceChanges
 
 Global / onLoad ~= (_.compose(s => "dependencyUpdates" :: s))
-
-ThisBuild / scalafixDependencies += "com.github.vovapolu" %% "scaluzzi" % "0.1.2"
 
 addCommandAlias("fix", "all compile:scalafix test:scalafix")
 addCommandAlias(
@@ -27,16 +22,33 @@ inThisBuild(
     libraryDependencies += "com.lihaoyi" %% "acyclic" % "0.2.1" % "provided",
     addCompilerPlugin("com.lihaoyi" %% "acyclic" % "0.2.1"),
 
+    // Scalafix
+    semanticdbEnabled := true,
+    semanticdbVersion := scalafixSemanticdb.revision,
+    scalafixDependencies ++= Seq(
+      "com.github.vovapolu" %% "scaluzzi" % "0.1.20",
+      "com.github.liancheng" %% "organize-imports" % "0.5.0"
+    ),
+
+    // Dependency runtime compatability check with sbt-missing-link
+    /* missinglinkExcludedDependencies ++= Seq( */
+    /*   moduleFilter(organization = "ch.qos.logback", name = "logback-classic"), */
+    /*   moduleFilter(organization = "org.slf4j", name = "slf4j-api") */
+    /* ), */
+    /* missinglinkIgnoreDestinationPackages ++= Seq(IgnoredPackage("org.codehaus")), */
+    /* concurrentRestrictions += Tags.limit(missinglinkConflictsTag, 1), */
+
+    // Disable Scaladoc
+    Compile / packageDoc / publishArtifact := false,
+    packageSrc / publishArtifact := false,
+    Compile / doc / sources := Seq.empty,
+
     // flags
     scalacOptions ++= Setup.compilerFlags,
-    // TODO remove filterNot Any
-    Compile / compile / wartremoverErrors := Warts.unsafe.filterNot(Seq(Wart.Any).contains(_)),
+
+    // Compiler plugins
     addCompilerPlugin("com.olegpy" %% "better-monadic-for" % "0.3.1"),
     addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.13.2" cross CrossVersion.full)
-    /* addCompilerPlugin( */
-    // semanticdbEnabled := true, // enable Semantic
-    // semanticdbVersion := scalafixSemanticdb.revision
-    /* ), // TODO version number manual workaround for https://github.com/scalacenter/scalafix/issues/1109 */
   )
 )
 
@@ -47,16 +59,20 @@ val settingsOvveride = Seq(
     "org.typelevel" %%% "cats-core" % "2.6.1",
     "org.typelevel" %%% "cats-effect" % "3.2.9",
     "co.fs2" %%% "fs2-core" % fs2Version,
+    // Communication
+    "com.softwaremill.sttp.tapir" %%% "tapir-core" % tapirVersion,
+    "com.softwaremill.sttp.tapir" %%% "tapir-json-circe" % tapirVersion,
     // serialization
     "io.circe" %%% "circe-core" % circeVersion,
-    "io.circe" %%% "circe-generic" % circeVersion, // TODO delete
-    "io.circe" %%% "circe-generic-extras" % circeVersion, // TODO delete
+    "io.circe" %%% "circe-generic-extras" % circeVersion,
     "io.circe" %%% "circe-derivation" % "0.13.0-M5",
     "io.circe" %%% "circe-derivation-annotations" % "0.13.0-M5",
     "io.circe" %%% "circe-parser" % circeVersion,
-    // TODO bump 3.0
+    // Utilities
     "dev.optics" %%% "monocle-core" % monocleVersion,
-    "dev.optics" %%% "monocle-macro" % monocleVersion
+    "dev.optics" %%% "monocle-macro" % monocleVersion,
+    "eu.timepit" %% "refined" % "0.9.27",
+    "eu.timepit" %% "refined-cats" % "0.9.27"
   ),
   // Disable fatal warning from sbt-tpolecat plugin when developing
   Test / scalacOptions -= "-Xfatal-warnings",
@@ -83,6 +99,14 @@ lazy val root = (project in file("."))
     publish := {},
     publishLocal := {}
   )
+
+lazy val shared = (crossProject(JSPlatform, JVMPlatform)
+  .crossType(CrossType.Pure) in file("modules/shared"))
+  .settings(
+    settingsOvveride
+  )
+  .jvmSettings(name := "sharedJVM")
+  .jsSettings(name := "sharedJS")
 
 lazy val backend = (project in file("modules/backend"))
   .enablePlugins(WebScalaJSBundlerPlugin) // TODO needed?
@@ -125,13 +149,13 @@ lazy val backend = (project in file("modules/backend"))
     reStart := (reStart dependsOn ((frontend / Compile / fastOptJS))).evaluated,
     // This settings makes reStart to rebuild if a scala.js file changes on the client
     watchSources ++= (frontend / watchSources).value
+    // Setup Docker
+    /* dockerBaseImage := "eclipse-temurin:8-jre-focal", */
+    /* dockerEnvVars := Map("TZ" -> "Europe/Oslo"), */
+    /* dockerExposedPorts ++= Seq(8080), */
+    /* Docker / packageName := "applicationcalculation", */
+    /* dockerRepository := Some("sgfinans") */
   )
-
-lazy val shared = (crossProject(JSPlatform, JVMPlatform)
-  .crossType(CrossType.Pure) in file("modules/shared"))
-  .settings(settingsOvveride)
-  .jvmSettings(name := "sharedJVM")
-  .jsSettings(name := "sharedJS")
 
 lazy val frontend = (project in file("modules/frontend"))
   .enablePlugins(ScalaJSPlugin,
@@ -141,6 +165,7 @@ lazy val frontend = (project in file("modules/frontend"))
   .dependsOn(shared.js)
   .settings(
     settingsOvveride,
+
     // Outcommented version 1.0 scala.js
     // scalacOptions ++= Seq(
     //   "-P:scalajs:sjsDefinedByDefault"
@@ -155,18 +180,23 @@ lazy val frontend = (project in file("modules/frontend"))
     /* WebPack code dependencies settings */
     /* Frontend dependencies settings */
     libraryDependencies ++= Seq(
-      // "com.github.japgolly.scalajs-react" %%% "core" % scalaJsReact,
-      // "com.github.japgolly.scalajs-react" %%% "ext-monocle-cats" % scalaJsReact,
-      // "com.github.japgolly.scalajs-react" %%% "ext-cats" % scalaJsReact,
-      // TODO not yet released for scala.js 1.0
-      /* "com.olegpy" %%% "shironeko-core" % "0.1.0-RC5", */
-      /* "com.olegpy" %%% "shironeko-slinky" % "0.1.0-RC5", */
-      "me.shadaj" %%% "slinky-core" % "0.6.8",
-      "me.shadaj" %%% "slinky-web" % "0.6.8"
+      // TODO https://github.com/http4s/http4s-dom
+      "com.softwaremill.sttp.tapir" %%% "tapir-sttp-client" % tapirVersion,
+      "io.github.cquiroz" %%% "scala-java-time" % "2.3.0", // implementations of java.time classes for Scala.JS
+
+      "com.github.japgolly.scalajs-react" %%% "callback" % scalaJsReact,
+      "com.github.japgolly.scalajs-react" %%% "callback-ext-cats" % scalaJsReact,
+      "com.github.japgolly.scalajs-react" %%% "callback-ext-cats_effect" % scalaJsReact,
+      "com.github.japgolly.scalajs-react" %%% "core-bundle-cats_effect" % scalaJsReact,
+      "com.github.japgolly.scalajs-react" %%% "extra" % scalaJsReact,
+      "com.github.japgolly.scalajs-react" %%% "extra-ext-monocle3" % scalaJsReact,
+      "com.github.japgolly.scalajs-react" %%% "test" % scalaJsReact % Test
+      /* "me.shadaj" %%% "slinky-core" % "0.6.8", */
+      /* "me.shadaj" %%% "slinky-web" % "0.6.8" */
     ),
     Compile / npmDependencies ++= Seq(
-      "react" -> "16.8.6",
-      "react-dom" -> "16.8.6"
+      "react" -> "17.0.2",
+      "react-dom" -> "17.0.2"
     ),
     Compile / npmDevDependencies ++= Seq(
       "auth0-js" -> "9.8.0",

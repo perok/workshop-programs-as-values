@@ -1,6 +1,5 @@
 // SBT improvements
-/* addSbtPlugin("org.duhemm" % "sbt-errors-summary" % "0.6.3") */
-/* addSbtPlugin("ch.epfl.scala" % "sbt-missinglink" % "0.3.2") TODO setup */
+addSbtPlugin("ch.epfl.scala" % "sbt-missinglink" % "0.3.2")
 addSbtPlugin("io.spray" % "sbt-revolver" % "0.9.1")
 
 // Tools
@@ -8,8 +7,7 @@ addSbtPlugin("org.scalameta" % "sbt-scalafmt" % "2.4.3")
 
 // Code improvement
 addSbtPlugin("io.github.davidgregory084" % "sbt-tpolecat" % "0.1.20")
-addSbtPlugin("ch.epfl.scala" % "sbt-scalafix" % "0.9.31") // TODO and remove wartremover
-addSbtPlugin("org.wartremover" % "sbt-wartremover" % "2.4.16")
+addSbtPlugin("ch.epfl.scala" % "sbt-scalafix" % "0.9.31")
 
 // Scala.js
 addSbtPlugin("org.portable-scala" % "sbt-scalajs-crossproject" % "1.1.0")
