@@ -1,16 +1,16 @@
 package no.perok.toucan.config
 
-import org.typelevel.log4cats.Logger
-// import io.chrisdavenport.log4cats.scribe.ScribeLogger
-import cats.effect._
 import cats.syntax.all._
+import cats.effect._
+import org.typelevel.log4cats.Logger
 import org.flywaydb.core.Flyway
 
 private[config] object SchemaMigration {
-  // implicit def localLogger[F[_]: Sync]: Logger[F] = ScribeLogger.empty[F]
+  implicit def localLogger[F[_]: Sync]: Logger[F] =
+    org.typelevel.log4cats.slf4j.Slf4jLogger.getLogger
 
   @SuppressWarnings(Array("org.wartremover.warts.NonUnitStatements"))
-  def migrate[F[_]: Sync: Logger](db: DB, dropFirst: Boolean): F[Unit] =
+  def migrate[F[_]: Sync](db: DB, dropFirst: Boolean): F[Unit] =
     Sync[F].delay {
       val flyway = Flyway
         .configure()

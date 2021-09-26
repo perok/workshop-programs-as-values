@@ -12,8 +12,8 @@ object assets extends js.Object
 
 @JSImport("uikit", JSImport.Default)
 @js.native
+@scala.annotation.nowarn
 object UIKit extends js.Object {
-  // @silent
   def use(in: Any): Unit = js.native
   def notification(in: String): Unit = js.native
 }

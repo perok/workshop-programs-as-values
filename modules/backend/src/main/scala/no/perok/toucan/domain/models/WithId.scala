@@ -4,11 +4,12 @@ import cats.{Eq, Show}
 import io.circe._
 import io.circe.derivation._
 import doobie._
-import scala.reflect.runtime.universe.TypeTag
 
 import scala.util.Try
 
 final case class WithId[A](id: ID[A], model: A)
+
+@scala.annotation.nowarn
 object WithId {
   implicit def jsonEncoderInstance[A: Encoder]: Encoder[WithId[A]] = deriveEncoder
   implicit def jsonDecoderInstance[A: Decoder]: Decoder[WithId[A]] = deriveDecoder
@@ -24,6 +25,8 @@ object WithId {
 @SuppressWarnings(Array("org.wartremover.warts.Any"))
 final class ID[Tag] private (val toRaw: Int) extends AnyVal
 object ID {
+  import org.tpolecat.typename._
+
   def apply[Tag](id: Int): ID[Tag] =
     new ID(id)
 
@@ -36,6 +39,6 @@ object ID {
   implicit def jsonEncoderInstance[Tag]: Encoder[ID[Tag]] = Encoder.encodeInt.contramap(_.toRaw)
   implicit def jsonDecoderInstance[Tag]: Decoder[ID[Tag]] = Decoder.decodeInt.map(ID[Tag])
 
-  implicit def phantomIdMeta[T](implicit tt: TypeTag[ID[T]]): Meta[ID[T]] =
+  implicit def phantomIdMeta[T](implicit tt: TypeName[ID[T]]): Meta[ID[T]] =
     Meta[Int].timap(ID[T])(a => a.toRaw)
 }

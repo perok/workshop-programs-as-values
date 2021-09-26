@@ -3,7 +3,7 @@ package no.perok.toucan.infrastructure.endpoint
 import java.time.Instant
 
 import cats.data._
-import cats.implicits._
+import cats.syntax.all._
 import cats.effect._
 import io.circe.syntax.EncoderOps
 import org.http4s._

@@ -1,6 +1,6 @@
 package test.composableForms
 
-import cats.implicits._
+import cats.syntax.all._
 import test.composableForms.Form.Field
 import test.composableForms.Form.Form
 

@@ -6,15 +6,16 @@ object Dependencies {
   val doobieVersion = "1.0.0-RC1"
   val circeVersion = "0.14.1"
   // val scalaJsReact = "1.4.2"
-  val monocleVersion = "2.1.0"
+  val monocleVersion = "3.1.0"
   val fs2Version = "3.1.3"
+  val testcontainersScalaVersion = "0.39.8"
 
   val backendDependencies: Seq[ModuleID] = {
     val httpServer: Seq[ModuleID] = Seq(
       "org.http4s" %% "http4s-dsl",
       "org.http4s" %% "http4s-circe",
-      "org.http4s" %% "http4s-blaze-server",
-      "org.http4s" %% "http4s-blaze-client"
+      "org.http4s" %% "http4s-ember-server",
+      "org.http4s" %% "http4s-ember-client"
     ).map(_ % http4sVersion)
 
     val database: Seq[ModuleID] = Seq(
@@ -29,19 +30,19 @@ object Dependencies {
     )
 
     val testLibs: Seq[ModuleID] = Seq(
-      // TODO mdoc
-      "org.scalatest" %% "scalatest" % "3.2.10",
-      "org.tpolecat" %% "doobie-scalatest" % doobieVersion
+      "org.scalameta" %% "munit" % "0.7.29",
+      "org.typelevel" %% "munit-cats-effect-3" % "1.0.5",
+      "org.tpolecat" %% "doobie-munit" % doobieVersion,
+      "com.dimafeng" %% "testcontainers-scala-munit" % testcontainersScalaVersion,
+      "com.dimafeng" %% "testcontainers-scala-postgresql" % testcontainersScalaVersion
     ).map(_ % "it,test")
 
     val utils = Seq(
+      "is.cir" %% "ciris" % "2.1.1",
       "org.typelevel" %% "mouse" % "1.0.4",
       "org.typelevel" %% "log4cats-slf4j" % "2.1.1",
       "ch.qos.logback" % "logback-classic" % "1.2.6",
       "ch.qos.logback" % "logback-core" % "1.2.6",
-      // TODO ciris
-      // "com.github.pureconfig" %% "pureconfig-generic" % "0.13.0",
-      // "com.github.pureconfig" %% "pureconfig-cats-effect" % "0.13.0",
       "com.lihaoyi" %% "pprint" % "0.6.6"
     )
 

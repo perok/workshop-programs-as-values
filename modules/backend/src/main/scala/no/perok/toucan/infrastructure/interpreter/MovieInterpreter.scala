@@ -1,6 +1,6 @@
 package no.perok.toucan.infrastructure.interpreter
 
-import cats.implicits._
+import cats.syntax.all._
 import cats.effect._
 import doobie.implicits._
 import doobie.util.transactor.Transactor

@@ -4,54 +4,43 @@ import org.typelevel.log4cats.Logger
 import org.typelevel.log4cats.slf4j.Slf4jLogger
 import cats.syntax.all._
 import cats.effect._
-import fs2.Stream
 import org.http4s._
 import org.http4s.implicits._
-import org.http4s.server.Router
-import org.http4s.blaze.server._
-import org.http4s.blaze.client.BlazeClientBuilder
-import org.http4s.client.Client
+import org.http4s.server._
+import org.http4s.client._
+import org.http4s.ember.server.EmberServerBuilder
+import org.http4s.ember.client.EmberClientBuilder
 import doobie.Transactor
 import no.perok.toucan.config.{Config, DBConfig}
 import no.perok.toucan.domain.TroopProgram
 import no.perok.toucan.infrastructure.interpreter._
 import no.perok.toucan.infrastructure.endpoint._
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import cats.effect.{Resource, Temporal}
-
-object Main extends IOApp {
-
+object Main extends IOApp.Simple {
   implicit def localLogger[F[_]: Sync]: Logger[F] = Slf4jLogger.getLogger[F]
 
-  def run(args: List[String]): IO[ExitCode] = {
-    program[IO].flatMap(_.compile.drain.as(ExitCode.Success))
-  }
+  def run = program[IO].useForever
 
-  // TODO Resource
-  def program[F[_]: Async]: F[Stream[F, ExitCode]] =
+  def program[F[_]: Async]: Resource[F, Server] =
     for {
-      settings <- Config[F]
-      _ <- Sync[F].fromEither(ensureEnv(settings))
-      xa <- DBConfig.getXA(settings.db, dropFirst = false)
-      _ <- Logger[F].info(show"Server starting at http://localhost:${settings.server.port}/")
-    } yield (for {
-      blocker <- Stream.resource(Resource.unit[F])
-      client <- BlazeClientBuilder[F](global).stream // TODO use .resource
+      settings <- Resource.eval(Config.config.load[F])
+      xa <- Resource.eval(DBConfig.getXA(settings.db, dropFirst = false))
+
+      _ <- Resource.eval(
+        Logger[F].info(
+          show"Server starting at http://localhost:${settings.server.port}/"
+        )
+      )
+
+      client <- EmberClientBuilder.default[F].build
+
       result <- startServer[F](xa, client, settings)
-    } yield result)
+    } yield result
 
-  /*
-    setResourceBase
-          Resource.newResource(ClassLoader.getSystemResource("public"))
-          .getURI
-.toASCIIString
-   */
-
-  private def startServer[F[_]: Async: Temporal](xa: Transactor[F],
-                                                 client: Client[F],
-                                                 settings: Config
-  ): Stream[F, ExitCode] = {
+  private def startServer[F[_]: Async](xa: Transactor[F],
+                                       client: Client[F],
+                                       settings: Config
+  ): Resource[F, Server] = {
     //
     // DI
     //
@@ -74,20 +63,11 @@ object Main extends IOApp {
       ("/public", StaticEndpoint.endpoints)
     ).orNotFound
 
-    BlazeServerBuilder[F](global)
-      .bindHttp(settings.server.port)
+    EmberServerBuilder
+      .default[F]
+      .withPort(settings.server.port)
       .withHttpApp(routes)
-      .serve
+      .build
   }
 
-  private def ensureEnv(settings: Config): Either[Throwable, Unit] =
-    // If `SCALA_ENV` is defined then config must correspond
-    // TODO reorder so if env.isProduction must then match ENV
-    sys.env.get("SCALA_ENV") match {
-      case Some(env) if env =!= settings.environment =>
-        new RuntimeException(
-          s"Incorrect environment: Running in $env, but config for ${settings.environment}"
-        ).asLeft
-      case _ => ().asRight
-    }
 }

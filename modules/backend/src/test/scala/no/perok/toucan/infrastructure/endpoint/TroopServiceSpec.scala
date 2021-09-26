@@ -1,20 +1,18 @@
 package no.perok.toucan.infrastructure.endpoint
 
 import java.time.LocalDateTime
+import munit._
 
 import cats.data._
-import cats.syntax.show._
-import cats.syntax.option._
-import cats.effect.IO
+import cats.syntax.all._
+import cats.effect._
 import org.http4s._
 import org.http4s.implicits._
 import no.perok.toucan.domain.models._
 import no.perok.toucan.domain.algebras.{TroopAlgebra, VoteAlgebra}
 import no.perok.toucan.domain.TroopProgram
-import org.scalatest.flatspec.AnyFlatSpec
-import org.scalatest.matchers.should.Matchers
 
-class TroopServiceSpec extends AnyFlatSpec with Matchers {
+class TroopServiceSpec extends CatsEffectSuite {
   //val xa =
   //  Transactor.fromConnection[IOLite](null).copy(strategy0 = Strategy.void)
   // TODO Heller kjøre white box tester på servicer?
@@ -57,27 +55,28 @@ class TroopServiceSpec extends AnyFlatSpec with Matchers {
   val troopService: HttpRoutes[IO] = {
     val handler = new TroopProgram[IO](troopAlgebra, voteAlgebra)
 
-    val service: Kleisli[OptionT[IO, ?], AuthedRequest[IO, WithId[User]], Response[IO]] =
+    val service: Kleisli[OptionT[IO, *], AuthedRequest[IO, WithId[User]], Response[IO]] =
       new TroopEndpoint(handler, troopAlgebra, voteAlgebra).endpoints
 
-    val authUser: Kleisli[OptionT[IO, ?], Request[IO], AuthedRequest[IO, WithId[User]]] =
+    val authUser: Kleisli[OptionT[IO, *], Request[IO], AuthedRequest[IO, WithId[User]]] =
       Kleisli(a => OptionT.liftF(IO.pure(AuthedRequest(testUser, a))))
 
     // Skip the authentication middleware
     service.compose(authUser)
   }
 
-  "The troop service should" should "GET /api/troop/{id}" in {
+  test("The troop service should GET /api/troop/{id}") {
     val myReq =
       Request[IO](Method.GET, Uri.unsafeFromString(show"/troop/${testTroop.id}"))
 
-    val result: Response[IO] =
-      troopService.orNotFound.run(myReq).unsafeRunSync()
-
-    val foundTroop: Troop = result.as[Troop].unsafeRunSync()
-
-    result.status shouldEqual Status.Ok
-//    foundTroop.id shouldEqual testTroop.id
-    foundTroop.name shouldEqual testTroop.model.name
+    for {
+      result <-
+        troopService.orNotFound.run(myReq)
+      foundTroop <- result.as[Troop]
+    } yield {
+      assertEquals(result.status, Status.Ok)
+      // assertEquals(foundTroop.id, testTroop.id)
+      assertEquals(foundTroop.name, testTroop.model.name)
+    }
   }
 }

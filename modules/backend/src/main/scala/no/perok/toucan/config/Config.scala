@@ -1,14 +1,15 @@
 package no.perok.toucan.config
 
-import cats.effect._
+import ciris._
+import com.comcast.ip4s.Port
 
-case class Server(port: Int)
+case class Server(port: Port)
 case class DB(name: String, user: String, password: String)
 
 case class Config(environment: String, tokenSecret: String, server: Server, db: DB)
 
-// todo ciris
 object Config {
-  def apply[F[_]: Sync]: F[Config] = ???
-  // ConfigSource.default.at("toucan").loadF[F, Config](blocker)
+  val config = env("APP_ENV")
+    .as[String]
+    .map(env => Config(env, "", Server(Port.fromInt(1).get), DB("", "", "")))
 }

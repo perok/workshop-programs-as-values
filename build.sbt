@@ -55,8 +55,8 @@ val settingsOvveride = Seq(
     "io.circe" %%% "circe-derivation-annotations" % "0.13.0-M5",
     "io.circe" %%% "circe-parser" % circeVersion,
     // TODO bump 3.0
-    "com.github.julien-truffaut" %%% "monocle-core" % monocleVersion,
-    "com.github.julien-truffaut" %%% "monocle-macro" % monocleVersion
+    "dev.optics" %%% "monocle-core" % monocleVersion,
+    "dev.optics" %%% "monocle-macro" % monocleVersion
   ),
   // Disable fatal warning from sbt-tpolecat plugin when developing
   Test / scalacOptions -= "-Xfatal-warnings",

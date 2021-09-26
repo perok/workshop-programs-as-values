@@ -1,23 +1,22 @@
 package no.perok.toucan.domain.security
 
+import munit._
 import no.perok.toucan.infrastructure.CryptographyLogic
-import org.scalatest.flatspec.AnyFlatSpec
-import org.scalatest.matchers.should.Matchers
 
-class CryptographyLogicSpec extends AnyFlatSpec with Matchers {
+class CryptographyLogicSpec extends FunSuite {
 
   val clearTextPassword = "1234567890"
   val hash: String = CryptographyLogic.hashPassword(clearTextPassword)
 
-  "The hashed password" should "be correctly verified" in {
-    CryptographyLogic.verifyPassword(clearTextPassword, hash) shouldEqual true
+  test("The hashed password should be correctly verified") {
+    assert(CryptographyLogic.verifyPassword(clearTextPassword, hash), true)
   }
 
-  "The hashed password" should "not work on incorrect passwords" in {
-    CryptographyLogic.verifyPassword("notCorrect", hash) shouldEqual false
+  test("The hashed password not work on incorrect passwords") {
+    assertEquals(CryptographyLogic.verifyPassword("notCorrect", hash), false)
   }
 
-  "The hashed password" should "have correct length" in {
-    hash.length shouldEqual 60
+  test("The hashed password should have correct length") {
+    assertEquals(hash.length, 60)
   }
 }

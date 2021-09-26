@@ -1,6 +1,7 @@
 package no.perok.toucan.domain.models
 
 /* ExpectedError Error for planned faults that can be shown to the user */
+// TODO handle these at Tapir layer
 sealed trait ExpectedError extends Throwable {
   val error: String
 }

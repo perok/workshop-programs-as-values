@@ -1,25 +1,28 @@
 package no.perok.toucan.infrastructure.repository
 
-import io.chrisdavenport.log4cats.Logger
-import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
+import munit._
+import org.typelevel.log4cats.Logger
+import org.typelevel.log4cats.slf4j.Slf4jLogger
 import cats.effect._
 import doobie._
-import no.perok.toucan.config.{Config, DBConfig}
 import no.perok.toucan.domain.models._
-import doobie.scalatest.IOChecker
-import org.scalatest.funsuite.AnyFunSuite
-import org.scalatest.matchers.should.Matchers
-import scala.concurrent.ExecutionContext.Implicits.global
+import com.dimafeng.testcontainers.PostgreSQLContainer
+import com.dimafeng.testcontainers.munit.TestContainerForAll
 
 // TODO Transactor with Task. This is a test of type IT
-class UserDAOSpec extends AnyFunSuite with Matchers with IOChecker {
-  implicit def localLogger[F[_]: Sync]: Logger[F] = Slf4jLogger.getLogger[F]
-  implicit val cs = IO.contextShift(global)
-  val blocker = Blocker.liftExecutionContext(global)
+class UserDAOSpec extends FunSuite with TestContainerForAll with doobie.munit.IOChecker {
+  override val containerDef: PostgreSQLContainer.Def = PostgreSQLContainer.Def()
 
-  val settings: Config = Config[IO](blocker).unsafeRunSync()
-  val transactor: Transactor[IO] = // TODO ikkje kjøre migrering her
-    DBConfig.getXA[IO](settings.db, dropFirst = false).unsafeRunSync()
+  val transactor: Transactor[IO] =
+    // TODO kjøre migrering her
+    withContainers { postgresContainer =>
+      Transactor.fromDriverManager[IO](
+        "org.postgresql.Driver",
+        postgresContainer.jdbcUrl,
+        postgresContainer.username,
+        postgresContainer.password
+      )
+    }
 
   val newUser: NewUserForm = NewUserForm("batman", "guesswho", "bat@man.no")
 
