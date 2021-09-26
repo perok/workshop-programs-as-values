@@ -6,9 +6,9 @@ import org.http4s._
 import org.http4s.dsl.Http4sDsl
 // import scala.concurrent.ExecutionContext.Implicits.global
 
-class StaticEndpoint[F[_]: Sync: ContextShift](blocker: Blocker) extends Http4sDsl[F] {
+class StaticEndpoint[F[_]: Sync] extends Http4sDsl[F] {
   def static(file: String, request: Request[F]): F[Response[F]] =
-    StaticFile.fromResource("/" + file, blocker, request.some).getOrElseF(NotFound())
+    StaticFile.fromResource("/" + file, request.some).getOrElseF(NotFound())
 
   def bundleUrl(projectName: String): Option[String] = {
     val name = projectName.toLowerCase
@@ -27,6 +27,6 @@ class StaticEndpoint[F[_]: Sync: ContextShift](blocker: Blocker) extends Http4sD
 }
 
 object StaticEndpoint {
-  def endpoints[F[_]: Sync: ContextShift](blocker: Blocker): HttpRoutes[F] =
-    new StaticEndpoint[F](blocker).endpoints
+  def endpoints[F[_]: Sync]: HttpRoutes[F] =
+    new StaticEndpoint[F].endpoints
 }

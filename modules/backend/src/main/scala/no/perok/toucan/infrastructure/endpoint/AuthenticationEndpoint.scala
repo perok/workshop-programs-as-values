@@ -4,7 +4,7 @@ import java.time.Instant
 
 import cats.data._
 import cats.implicits._
-import cats.effect.Effect
+import cats.effect._
 import io.circe.syntax.EncoderOps
 import org.http4s._
 import org.http4s.circe._
@@ -15,7 +15,7 @@ import no.perok.toucan.domain.algebras.UserAlgebra
 import no.perok.toucan.domain.models._
 import no.perok.toucan.infrastructure.CryptographyLogic
 
-class AuthenticationEndpoint[F[_]: Effect](userAlgebra: UserAlgebra[F], settings: Config)
+class AuthenticationEndpoint[F[_]: Async](userAlgebra: UserAlgebra[F], settings: Config)
     extends Http4sDsl[F] {
   val tokenHandler = new AuthenticationLogic(settings)
 

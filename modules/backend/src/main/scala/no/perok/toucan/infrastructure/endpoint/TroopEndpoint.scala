@@ -1,9 +1,7 @@
 package no.perok.toucan.infrastructure.endpoint
 
-import cats.syntax.applicativeError._
-import cats.syntax.flatMap._
-import cats.syntax.functor._
-import cats.effect.Sync
+import cats.syntax.all._
+import cats.effect._
 import org.http4s._
 import org.http4s.dsl.Http4sDsl
 import org.http4s.circe._
@@ -14,7 +12,7 @@ import no.perok.toucan.domain.models._
 
 //import org.postgresql.util.PSQLException
 
-class TroopEndpoint[F[_]: Sync](
+class TroopEndpoint[F[_]: Concurrent](
     handler: TroopProgram[F],
     troopAlgebra: TroopAlgebra[F],
     voteAlgebra: VoteAlgebra[F]

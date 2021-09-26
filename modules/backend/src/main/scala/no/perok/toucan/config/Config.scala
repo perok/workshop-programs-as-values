@@ -9,6 +9,6 @@ case class Config(environment: String, tokenSecret: String, server: Server, db: 
 
 // todo ciris
 object Config {
-  def apply[F[_]: Sync: ContextShift](blocker: Blocker): F[Config] = ???
-    // ConfigSource.default.at("toucan").loadF[F, Config](blocker)
+  def apply[F[_]: Sync]: F[Config] = ???
+  // ConfigSource.default.at("toucan").loadF[F, Config](blocker)
 }

@@ -1,8 +1,8 @@
 package no.perok.toucan
 
-import io.chrisdavenport.log4cats.Logger
-import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
-import cats.implicits._
+import org.typelevel.log4cats.Logger
+import org.typelevel.log4cats.slf4j.Slf4jLogger
+import cats.syntax.all._
 import cats.effect._
 import fs2.Stream
 import org.http4s._
@@ -18,29 +18,27 @@ import no.perok.toucan.infrastructure.interpreter._
 import no.perok.toucan.infrastructure.endpoint._
 
 import scala.concurrent.ExecutionContext.Implicits.global
+import cats.effect.{Resource, Temporal}
 
 object Main extends IOApp {
 
   implicit def localLogger[F[_]: Sync]: Logger[F] = Slf4jLogger.getLogger[F]
-
-  // TODO not optimal blocker setup
-  val blocker = Blocker.liftExecutionContext(global)
 
   def run(args: List[String]): IO[ExitCode] = {
     program[IO].flatMap(_.compile.drain.as(ExitCode.Success))
   }
 
   // TODO Resource
-  def program[F[_]: ConcurrentEffect: ContextShift: Timer]: F[Stream[F, ExitCode]] =
+  def program[F[_]: Async]: F[Stream[F, ExitCode]] =
     for {
-      settings <- Config[F](blocker)
+      settings <- Config[F]
       _ <- Sync[F].fromEither(ensureEnv(settings))
       xa <- DBConfig.getXA(settings.db, dropFirst = false)
       _ <- Logger[F].info(show"Server starting at http://localhost:${settings.server.port}/")
     } yield (for {
-      blocker <- Stream.resource(Blocker[F])
+      blocker <- Stream.resource(Resource.unit[F])
       client <- BlazeClientBuilder[F](global).stream // TODO use .resource
-      result <- startServer[F](blocker, xa, client, settings)
+      result <- startServer[F](xa, client, settings)
     } yield result)
 
   /*
@@ -50,11 +48,9 @@ object Main extends IOApp {
 .toASCIIString
    */
 
-  private def startServer[F[_]: ConcurrentEffect: ContextShift: Timer](
-      blocker: Blocker,
-      xa: Transactor[F],
-      client: Client[F],
-      settings: Config
+  private def startServer[F[_]: Async: Temporal](xa: Transactor[F],
+                                                 client: Client[F],
+                                                 settings: Config
   ): Stream[F, ExitCode] = {
     //
     // DI
@@ -75,7 +71,7 @@ object Main extends IOApp {
     val routes = Router(
       ("/api/auth", authenticationServices.authenticationHttp),
       ("/api", apiServices),
-      ("/public", StaticEndpoint.endpoints(blocker))
+      ("/public", StaticEndpoint.endpoints)
     ).orNotFound
 
     BlazeServerBuilder[F](global)

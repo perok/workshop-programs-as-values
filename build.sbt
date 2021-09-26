@@ -40,7 +40,7 @@ inThisBuild(
     libraryDependencies ++= Seq(
       // Standard lib
       "org.typelevel" %%% "cats-core" % "2.6.1",
-      "org.typelevel" %%% "cats-effect" % "2.5.4",
+      "org.typelevel" %%% "cats-effect" % "3.2.9",
       "co.fs2" %%% "fs2-core" % fs2Version,
       // serialization
       "io.circe" %%% "circe-core" % circeVersion,

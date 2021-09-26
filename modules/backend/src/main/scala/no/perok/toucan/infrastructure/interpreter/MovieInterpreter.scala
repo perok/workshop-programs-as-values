@@ -1,7 +1,7 @@
 package no.perok.toucan.infrastructure.interpreter
 
 import cats.implicits._
-import cats.effect.Sync
+import cats.effect._
 import doobie.implicits._
 import doobie.util.transactor.Transactor
 import no.perok.toucan.domain.algebras.MovieAlgebra
@@ -12,7 +12,8 @@ import org.http4s.circe._
 import org.http4s.client.Client
 import org.http4s.{Query}
 
-class MovieInterpreter[F[_]: Sync](xa: Transactor[F], client: Client[F]) extends MovieAlgebra[F] {
+class MovieInterpreter[F[_]: Concurrent](xa: Transactor[F], client: Client[F])
+    extends MovieAlgebra[F] {
 
   @SuppressWarnings(Array("org.wartremover.warts.Throw"))
   private val movieDbUri = uri"https://api.themoviedb.org/3"

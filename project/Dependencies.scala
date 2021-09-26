@@ -2,12 +2,12 @@ import sbt._
 //import org.portablescala.sbtplatformdeps.PlatformDepsPlugin.autoImport._
 
 object Dependencies {
-  val http4sVersion = "0.22.5"
-  val doobieVersion = "0.13.4"
+  val http4sVersion = "0.23.4"
+  val doobieVersion = "1.0.0-RC1"
   val circeVersion = "0.14.1"
   // val scalaJsReact = "1.4.2"
   val monocleVersion = "2.1.0"
-  val fs2Version = "2.5.9"
+  val fs2Version = "3.1.3"
 
   val backendDependencies: Seq[ModuleID] = {
     val httpServer: Seq[ModuleID] = Seq(
@@ -36,8 +36,7 @@ object Dependencies {
 
     val utils = Seq(
       "org.typelevel" %% "mouse" % "1.0.4",
-      "io.chrisdavenport" %% "log4cats-core" % "1.1.1",
-      "io.chrisdavenport" %% "log4cats-slf4j" % "1.1.1",
+      "org.typelevel" %% "log4cats-slf4j" % "2.1.1",
       "ch.qos.logback" % "logback-classic" % "1.2.6",
       "ch.qos.logback" % "logback-core" % "1.2.6",
       // TODO ciris

@@ -1,9 +1,9 @@
 package no.perok.toucan.config
 
-import io.chrisdavenport.log4cats.Logger
+import org.typelevel.log4cats.Logger
 // import io.chrisdavenport.log4cats.scribe.ScribeLogger
 import cats.effect._
-import cats.implicits._
+import cats.syntax.all._
 import org.flywaydb.core.Flyway
 
 private[config] object SchemaMigration {
