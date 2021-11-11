@@ -15,16 +15,15 @@ object assets extends js.Object
 @JSImport("uikit", JSImport.Default)
 @js.native
 @scala.annotation.nowarn
-object UIKit extends js.Object {
+object UIKit extends js.Object:
   def use(in: Any): Unit = js.native
   def notification(in: String): Unit = js.native
-}
 
 @js.native
 @JSImport("uikit/dist/js/uikit-icons", JSImport.Default)
 object UIKitIcons extends js.Object
 
-object Main {
+object Main:
   import japgolly.scalajs.react._
   // import japgolly.scalajs.react.vdom.html_<^._
   import japgolly.scalajs.react.vdom.all._
@@ -91,9 +90,8 @@ object Main {
         p(s"Your favourite fruit is a ${fruit.value}!")
       )
     )
-}
 
-object utils {
+object utils:
   import sttp.tapir.client.sttp.SttpClientInterpreter
   import sttp.client3.impl.cats.FetchCatsBackend
 
@@ -114,25 +112,22 @@ object utils {
       e: sttp.tapir.PublicEndpoint[I, Nothing, O, Any]
   ): I => IO[sttp.client3.Response[O]] = { input =>
     performTapirE[I, Nothing, O, R](e)(input).map { result =>
-      val newBody = result.body match {
+      val newBody = result.body match
         case Right(res) => res
         case Left(_) => throw new Exception("Impossible")
-      }
 
       result.copy(body = newBody)
     }
   }
-}
 
-object ReactApp extends IOApp.Simple {
-  def require(): Unit = {
+object ReactApp extends IOApp.Simple:
+  def require(): Unit =
     assets
     UIKit
     UIKitIcons
     ()
-  }
 
-  val run: IO[Unit] = {
+  val run: IO[Unit] =
     require()
     UIKit.use(UIKitIcons)
     UIKit.notification("UIKit loaded")
@@ -154,5 +149,3 @@ object ReactApp extends IOApp.Simple {
 
     IO.delay(Root.renderIntoDOM(document.getElementById("container"))) >>
       IO.never
-  }
-}

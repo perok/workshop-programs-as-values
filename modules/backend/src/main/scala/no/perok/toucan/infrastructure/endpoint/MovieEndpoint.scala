@@ -8,7 +8,7 @@ import org.http4s._
 import org.http4s.circe._
 import org.http4s.dsl.Http4sDsl
 
-class MovieEndpoint[F[_]: Sync](movieRepository: MovieAlgebra[F]) extends Http4sDsl[F] {
+class MovieEndpoint[F[_]: Sync](movieRepository: MovieAlgebra[F]) extends Http4sDsl[F]:
   def service: HttpRoutes[F] =
     HttpRoutes.of[F] { case GET -> Root / "movie" / MovieIdVar(id) =>
       movieRepository.getMovie(id).map {
@@ -16,4 +16,3 @@ class MovieEndpoint[F[_]: Sync](movieRepository: MovieAlgebra[F]) extends Http4s
         case None => Response(Status.NoContent)
       }
     }
-}

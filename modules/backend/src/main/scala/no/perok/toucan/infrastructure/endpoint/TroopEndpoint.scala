@@ -16,12 +16,11 @@ class TroopEndpoint[F[_]: Concurrent](
     handler: TroopProgram[F],
     troopAlgebra: TroopAlgebra[F],
     voteAlgebra: VoteAlgebra[F]
-) extends Http4sDsl[F] {
+) extends Http4sDsl[F]:
   // TODO // From unknown program error to a response
-  private val errorHandler: PartialFunction[Throwable, F[Response[F]]] = {
+  private val errorHandler: PartialFunction[Throwable, F[Response[F]]] =
     //case lol @ PSQLException => Conflict(s"EEEK $lol")
     case lol @ _ => InternalServerError(s"Something bad happened: ${lol.toString()}")
-  }
 
   def endpoints: AuthedRoutes[WithId[User], F] = AuthedRoutes.of[WithId[User], F] {
     case GET -> Root / "troop" as user =>
@@ -76,4 +75,3 @@ class TroopEndpoint[F[_]: Concurrent](
           .handleErrorWith(errorHandler)
       }
   }
-}

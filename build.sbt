@@ -31,7 +31,7 @@ inThisBuild(
     Compile / doc / sources := Seq.empty,
 
     // flags
-    scalacOptions ++= Seq()
+    scalacOptions ++= Seq("-new-syntax", "-indent")
   )
 )
 

@@ -2,15 +2,13 @@ package no.perok.toucan.domain.models
 
 /* ExpectedError Error for planned faults that can be shown to the user */
 // TODO handle these at Tapir layer
-sealed trait ExpectedError extends Throwable {
+sealed trait ExpectedError extends Throwable:
   val error: String
-}
 
-object ExpectedError {
+object ExpectedError:
   final case class Duplicate(error: String) extends ExpectedError
-  object Unknown extends ExpectedError {
+  object Unknown extends ExpectedError:
     val error: String = "Unknown"
-  }
 
   /* def errorToHttp(err: Error): IO[Response[IO]] = {
 
@@ -21,6 +19,5 @@ object ExpectedError {
       case Duplicate(error) => org.http4s.Status.NoContent //(error)
     }
   } */
-}
 
 /* TODO ControlFlowError for control flow solving with errors */

@@ -16,7 +16,7 @@ import org.http4s.server._
 import org.typelevel.log4cats.Logger
 import org.typelevel.log4cats.slf4j.Slf4jLogger
 
-object Main extends IOApp.Simple {
+object Main extends IOApp.Simple:
   implicit def localLogger[F[_]: Sync]: Logger[F] = Slf4jLogger.getLogger[F]
 
   def run = program[IO].useForever
@@ -40,7 +40,7 @@ object Main extends IOApp.Simple {
   private def startServer[F[_]: Async](xa: Transactor[F],
                                        client: Client[F],
                                        settings: Config
-  ): Resource[F, Server] = {
+  ): Resource[F, Server] =
     //
     // DI
     //
@@ -70,6 +70,4 @@ object Main extends IOApp.Simple {
       .withPort(settings.server.port)
       .withHttpApp(routes.orNotFound)
       .build
-  }
 
-}

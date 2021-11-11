@@ -10,10 +10,10 @@ import pdi.jwt.{JwtAlgorithm, JwtCirce, JwtClaim}
 
 import java.time.Instant
 
-class AuthenticationLogic(settings: Config) {
+class AuthenticationLogic(settings: Config):
   private val algorithm = JwtAlgorithm.HS256
 
-  def makeToken(user: WithId[User], issued: Instant): String = {
+  def makeToken(user: WithId[User], issued: Instant): String =
     // TODO simpleJWTUser, or something
     val key = settings.tokenSecret
 
@@ -24,9 +24,8 @@ class AuthenticationLogic(settings: Config) {
     )
 
     JwtCirce.encode(claim, key, algorithm)
-  }
 
-  def authenticate(token: String): Either[String, WithId[User]] = {
+  def authenticate(token: String): Either[String, WithId[User]] =
     JwtCirce
       .decode(token, settings.tokenSecret, Seq(JwtAlgorithm.HS256))
       .toEither
@@ -41,5 +40,3 @@ class AuthenticationLogic(settings: Config) {
         decode[WithId[User]](claim.content)
           .leftMap(x => s"Decoding user from claim content: ${x.toString}\n${claim.content}")
       }
-  }
-}

@@ -10,10 +10,9 @@ import scala.util.Try
 final case class WithId[A](id: ID[A], model: A)
 
 @scala.annotation.nowarn
-object WithId {
+object WithId:
   implicit def jsonEncoderInstance[A: Encoder]: Encoder[WithId[A]] = deriveEncoder
   implicit def jsonDecoderInstance[A: Decoder]: Decoder[WithId[A]] = deriveDecoder
-}
 
 /* We don't need pattern matching, so make it a normal class. But make
  * the `toRaw` member field public so we can convert the ID back to its
@@ -24,7 +23,7 @@ object WithId {
 
 @SuppressWarnings(Array("org.wartremover.warts.Any"))
 final class ID[Tag] private (val toRaw: Int) extends AnyVal
-object ID {
+object ID:
   import org.tpolecat.typename._
 
   def apply[Tag](id: Int): ID[Tag] =
@@ -41,4 +40,3 @@ object ID {
 
   implicit def phantomIdMeta[T](implicit tt: TypeName[ID[T]]): Meta[ID[T]] =
     Meta[Int].timap(ID[T])(a => a.toRaw)
-}

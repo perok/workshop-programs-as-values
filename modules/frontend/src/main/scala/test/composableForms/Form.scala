@@ -3,14 +3,13 @@ package test.composableForms
 import cats.syntax.all._
 import test.composableForms.Form.{Field, Form}
 
-object Form {
+object Form:
 
   sealed trait Error
-  object Error {
+  object Error:
     object RequiredFieldIsEmpty
     final case class ValidationFailed(errror: String)
     final case class External(error: String)
-  }
 
 //  {-| A [`Form`](Form#Form) that can contain any type of `field`.
 //    -}
@@ -220,9 +219,8 @@ you do not care about the `output` they produce. An example of this is a "repeat
 //  | Filled a
   // => Option
 
-}
 
-object Base {
+object Base:
   // TODO different kinds of Base fields
 //  {-| Most form fields require configuration! `FieldConfig` allows you to specify how a
 //    concrete field is validated and updated, alongside its attributes:
@@ -248,7 +246,7 @@ object Base {
       attributes: attrs
   )
 
-  object TextField {
+  object TextField:
 
     type AttributesTextField = { val label: String }
     type TextField[values] = Field[AttributesTextField, String, values]
@@ -265,8 +263,6 @@ object Base {
       // TODO https://github.com/hecrj/composable-form/blob/a8dafcac4dd076e71d1a433f493f4d81eb42a6ad/src/Form/Base/TextField.elm#L66
       ???
 
-  }
-}
 
 object View {
   // TODO
@@ -277,7 +273,7 @@ object TopForm {
 }
 
 import test.composableForms.Form.{Field, Form}
-object Tests {
+object Tests:
 //  import Form._
   import Base._
 
@@ -312,4 +308,3 @@ passwordField =
 
   println(a)
 
-}

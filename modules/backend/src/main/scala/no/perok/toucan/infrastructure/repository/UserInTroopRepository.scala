@@ -5,7 +5,7 @@ import doobie.implicits._
 import doobie.postgres._
 import no.perok.toucan.domain.models._
 
-object UserInTroopRepository {
+object UserInTroopRepository:
   def addUserToTroop(
       troop: ID[Troop],
       user: ID[User],
@@ -22,7 +22,7 @@ object UserInTroopRepository {
   def getAllTroops(user: ID[User]): ConnectionIO[List[UserInTroop]] =
     Statements.getAllTroops(user).to[List]
 
-  object Statements {
+  object Statements:
     def addToTroop(troop: ID[Troop], user: ID[User], isAdmin: Boolean): Update0 =
       sql"""
            |INSERT INTO user_is_in_troop
@@ -40,6 +40,4 @@ object UserInTroopRepository {
            |WHERE
            |  user_id = $user
          """.stripMargin.query[UserInTroop]
-  }
 
-}

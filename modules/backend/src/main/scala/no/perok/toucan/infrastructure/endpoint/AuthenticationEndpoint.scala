@@ -16,10 +16,10 @@ import org.http4s.server.AuthMiddleware
 import java.time.Instant
 
 class AuthenticationEndpoint[F[_]: Async](userAlgebra: UserAlgebra[F], settings: Config)
-    extends Http4sDsl[F] {
+    extends Http4sDsl[F]:
   val tokenHandler = new AuthenticationLogic(settings)
 
-  def verifyLogin(request: Request[F]): F[Either[String, WithId[User]]] = {
+  def verifyLogin(request: Request[F]): F[Either[String, WithId[User]]] =
     val credentialFlow: EitherT[F, String, WithId[User]] = for {
       // TODO change to basicCredentials Authentication header
       // credentials <- EitherT.right(request.asJsonDecode[BasicCredentials])
@@ -39,7 +39,6 @@ class AuthenticationEndpoint[F[_]: Async](userAlgebra: UserAlgebra[F], settings:
     } yield user
 
     credentialFlow.value
-  }
 
   val retrieveUser: Kleisli[F, ID[User], Option[WithId[User]]] = Kleisli({ id =>
     OptionT(userAlgebra.getUserById(id)).map(WithId(id, _)).value
@@ -111,4 +110,3 @@ class AuthenticationEndpoint[F[_]: Async](userAlgebra: UserAlgebra[F], settings:
           .handleErrorWith(errorHandler)
       // http://localhost:8080/api/auth/auth0/callback#access_token=OyZbUfq28clbgm5UbmWB2ku_1J7sVOOr&expires_in=7200&token_type=Bearer&state=XQ4op2Cz5pvKKg512GjB~N5VcmcikfVH&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6Ik1EVkdRMEZHUXpNMFJEQkVOREZGUVRaQ1JURkVPVUl4T0RkRk5UazBOekZFTjBJMk9VVkZSUSJ9.eyJpc3MiOiJodHRwczovL3Blcm9rLmV1LmF1dGgwLmNvbS8iLCJzdWIiOiJnb29nbGUtb2F1dGgyfDExNjQ4MDA1NzIxMTY0MjExMzA2MCIsImF1ZCI6ImM4b1Jtd2ZiVmhIbHBvY05nVUFwZ1BVOGJwdDV3V2Z0IiwiaWF0IjoxNTM5NTIzODM0LCJleHAiOjE1Mzk1NTk4MzQsImF0X2hhc2giOiI0dTBXMUFBNzlVUWpEbV8xVlEwZlR3Iiwibm9uY2UiOiIxcndQNTFyaW44dU5ZR0pQQy0wdWZla2ZkNkRLcnRuayJ9.pnEp53X8-afVnq2lRMbdx6F2NGr4-Jc5z9SAYY-LT9ZnquqAbOlUgvOf91T5rr0d2IqZ8I_lPzTGpt4wEkeaVDtfV6-XYASfxUdJsrF4Q46WkjJVSf_5ADQPxP5xMI5KP99wD2A6weONOTISgr-vaoLGj8ZO_DgYEVbTBdVjgLdP_0vj3C3a8dOjGP_ZQ1q06HGaAnhbBwBCcbPA4rFXaAMxThEWXgr8IlvxxyaYAm_LoaRzDmHTpdVMcWhxDj9NoD7yupBN8BSNWf5ZBJEopPvf8dTCjDl2jvL9ouIjL0haPpNQw7sY84GIXMJN2z2LeKvm6Lc5DM-pz_ryq7lcjg
     }
-}

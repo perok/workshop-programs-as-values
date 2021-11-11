@@ -2,7 +2,7 @@ package no.perok.toucan.domain.algebras
 
 import no.perok.toucan.domain.models.{ExpectedError, _}
 
-trait TroopAlgebra[F[_]] {
+trait TroopAlgebra[F[_]]:
   def listTroops: F[List[Troop]]
   def listTroopsFor(user: ID[User]): F[List[UserInTroop]]
   def getTroop(id: ID[Troop]): F[Option[Troop]]
@@ -12,4 +12,3 @@ trait TroopAlgebra[F[_]] {
   def addUserToTroop(troop: ID[Troop],
                      user: ID[User],
                      isAdmin: Boolean): F[ExpectedError Either ID[UserInTroop]]
-}

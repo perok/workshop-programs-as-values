@@ -7,7 +7,7 @@ import no.perok.toucan.domain.algebras.UserAlgebra
 import no.perok.toucan.domain.models._
 import no.perok.toucan.infrastructure.repository.UserRepository
 
-class UserInterpreter[F[_]: Sync](xa: Transactor[F]) extends UserAlgebra[F] {
+class UserInterpreter[F[_]: Sync](xa: Transactor[F]) extends UserAlgebra[F]:
   def getUserHashByUsername(username: String): F[Option[String]] =
     UserRepository.getUserHashByUsername(username).transact(xa)
 
@@ -19,4 +19,3 @@ class UserInterpreter[F[_]: Sync](xa: Transactor[F]) extends UserAlgebra[F] {
 
   def addUser(newUser: NewUserForm): F[Either[String, Int]] =
     UserRepository.addUser(newUser).transact(xa)
-}

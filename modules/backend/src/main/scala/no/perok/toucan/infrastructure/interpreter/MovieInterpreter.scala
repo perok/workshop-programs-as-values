@@ -13,14 +13,14 @@ import org.http4s.client.Client
 import org.http4s.implicits._
 
 class MovieInterpreter[F[_]: Concurrent](xa: Transactor[F], client: Client[F])
-    extends MovieAlgebra[F] {
+    extends MovieAlgebra[F]:
 
   @SuppressWarnings(Array("org.wartremover.warts.Throw"))
   private val movieDbUri = uri"https://api.themoviedb.org/3"
   private val query = Query.fromPairs(("api_key", "TODO"))
 
   @SuppressWarnings(Array("org.wartremover.warts.Null", "org.wartremover.warts.AsInstanceOf"))
-  def searchMovie(name: String): F[List[Movie]] = {
+  def searchMovie(name: String): F[List[Movie]] =
     // TODO ScalaCache first
     val uri = (movieDbUri / s"search/movie")
       .copy(
@@ -37,11 +37,9 @@ class MovieInterpreter[F[_]: Concurrent](xa: Transactor[F], client: Client[F])
 
         null.asInstanceOf[List[Movie]]
       }
-  }
 
   def getMovie(id: ID[Movie]): F[Option[Movie]] =
     MovieRepository.getMovie(id).transact(xa)
 
   def insertMovie(newMovie: Movie): F[Either[String, Movie]] =
     MovieRepository.insertMovie(newMovie).transact(xa)
-}

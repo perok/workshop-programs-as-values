@@ -1,6 +1,5 @@
 package no.perok.toucan.config
 
 // TODO input params?
-object RunParams {
+object RunParams:
   val dropFirst = false
-}

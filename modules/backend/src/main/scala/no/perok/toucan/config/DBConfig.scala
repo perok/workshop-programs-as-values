@@ -5,7 +5,7 @@ import cats.syntax.all._
 import doobie._
 import org.typelevel.log4cats.Logger
 
-object DBConfig {
+object DBConfig:
   def getXA[F[_]: Async: Logger](settings: DB, dropFirst: Boolean): F[Transactor[F]] =
     SchemaMigration
       .migrate[F](settings, dropFirst)
@@ -17,4 +17,3 @@ object DBConfig {
           pass = settings.password
         )
       )
-}

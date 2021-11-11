@@ -7,7 +7,7 @@ import doobie.postgres.implicits._
 import no.perok.toucan.domain.models._
 import no.perok.toucan.infrastructure.CryptographyLogic
 
-object UserRepository {
+object UserRepository:
   def getUserHashByUsername(username: String): ConnectionIO[Option[String]] =
     Statements.getUserHashByUsername(username).option
 
@@ -28,7 +28,7 @@ object UserRepository {
         case sqlstate.class23.UNIQUE_VIOLATION => s"User ${newUser.username} already exists"
       }
 
-  object Statements {
+  object Statements:
     val listUsers: Query0[User] =
       sql"select email, username, created from user_account"
         .query[User]
@@ -52,5 +52,3 @@ object UserRepository {
            |VALUES
            |  (${newUser.username}, ${newUser.password}, ${newUser.email})
          """.stripMargin.update
-  }
-}

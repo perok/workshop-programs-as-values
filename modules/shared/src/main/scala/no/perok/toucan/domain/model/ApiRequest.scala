@@ -1,14 +1,13 @@
 package no.perok.toucan.domain.model
 // TODO package no.perok.toucan.shared.api
 
-object Data {
+object Data:
   import sttp.tapir.Schema
   import io.circe.Codec
 
   case class Book(title: String) derives Codec.AsObject, Schema
-}
 
-object ApiRequest {
+object ApiRequest:
   import sttp.tapir._
   import sttp.tapir.json.circe._
 
@@ -31,5 +30,3 @@ object ApiRequest {
       .in(header[AuthToken]("X-Auth-Token"))
       .errorOut(stringBody)
       .out(jsonBody[List[Book]])
-
-}

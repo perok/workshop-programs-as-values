@@ -20,7 +20,7 @@ import no.perok.toucan.domain.models._
       } yield user.toSeq
   }*/
 
-object MovieRepository {
+object MovieRepository:
   def getMovie(id: ID[Movie]): ConnectionIO[Option[Movie]] =
     Statements.getMovie(id).option
 
@@ -31,7 +31,7 @@ private val errorHandler: PartialFunction[SqlState, String] = {
   case sqlstate.class23.UNIQUE_VIOLATION => "egg"
 }*/
 
-  def insertMovie(newMovie: Movie): ConnectionIO[String Either Movie] = {
+  def insertMovie(newMovie: Movie): ConnectionIO[String Either Movie] =
     Statements
       .insertMovie(newMovie)
       .withUniqueGeneratedKeys[Movie]("id", "title", "data")
@@ -39,9 +39,8 @@ private val errorHandler: PartialFunction[SqlState, String] = {
         case sqlstate.class23.UNIQUE_VIOLATION =>
           s"Movie ${newMovie.title} is already stored"
       }
-  }
 
-  object Statements {
+  object Statements:
     def getMovie(id: ID[Movie]): Query0[Movie] =
       sql"select id, title, data from movie where id = $id"
         .query[Movie]
@@ -52,5 +51,3 @@ private val errorHandler: PartialFunction[SqlState, String] = {
           values
             (${newMovie.id}, ${newMovie.title})
       """.update
-  }
-}

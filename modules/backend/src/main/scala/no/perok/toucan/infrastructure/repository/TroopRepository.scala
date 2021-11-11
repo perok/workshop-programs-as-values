@@ -5,7 +5,7 @@ import doobie.implicits._
 import doobie.postgres._
 import no.perok.toucan.domain.models._
 
-object TroopRepository {
+object TroopRepository:
   val listTroops: ConnectionIO[List[Troop]] =
     Statements.listTroops.to[List]
 
@@ -24,7 +24,7 @@ private val errorHandler: PartialFunction[SqlState, String] = {
   case sqlstate.class23.UNIQUE_VIOLATION => "egg"
 }*/
 
-  def insertTroop(newTroop: TroopForm): ConnectionIO[ExpectedError Either Troop] = {
+  def insertTroop(newTroop: TroopForm): ConnectionIO[ExpectedError Either Troop] =
     Statements
       .insertTroop(newTroop)
       .withUniqueGeneratedKeys[Troop]("id", "name")
@@ -32,9 +32,8 @@ private val errorHandler: PartialFunction[SqlState, String] = {
         case sqlstate.class23.UNIQUE_VIOLATION =>
           ExpectedError.Duplicate(s"Troop ${newTroop.name} already exists")
       }
-  }
 
-  object Statements {
+  object Statements:
     val listTroops: Query0[Troop] =
       sql"select name from troop"
         .query[Troop]
@@ -48,5 +47,3 @@ private val errorHandler: PartialFunction[SqlState, String] = {
 
     def insertTroop(newTroop: TroopForm): Update0 =
       sql"insert into troop (name) values (${newTroop.name})".update
-  }
-}
