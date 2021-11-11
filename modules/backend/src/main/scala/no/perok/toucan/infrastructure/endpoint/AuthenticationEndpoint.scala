@@ -1,19 +1,19 @@
 package no.perok.toucan.infrastructure.endpoint
 
-import java.time.Instant
-
 import cats.data._
-import cats.syntax.all._
 import cats.effect._
-import io.circe.syntax.EncoderOps
-import org.http4s._
-import org.http4s.circe._
-import org.http4s.dsl.Http4sDsl
-import org.http4s.server.AuthMiddleware
+import cats.syntax.all._
+import io.circe.syntax.*
 import no.perok.toucan.config.Config
 import no.perok.toucan.domain.algebras.UserAlgebra
 import no.perok.toucan.domain.models._
 import no.perok.toucan.infrastructure.CryptographyLogic
+import org.http4s._
+import org.http4s.circe._
+import org.http4s.dsl.Http4sDsl
+import org.http4s.server.AuthMiddleware
+
+import java.time.Instant
 
 class AuthenticationEndpoint[F[_]: Async](userAlgebra: UserAlgebra[F], settings: Config)
     extends Http4sDsl[F] {
@@ -78,8 +78,8 @@ class AuthenticationEndpoint[F[_]: Async](userAlgebra: UserAlgebra[F], settings:
         .map(_.flatMap(_.toRight("No User")))
     })
 
-  private val onFailure: Kleisli[OptionT[F, *], AuthedRequest[F, String], Response[F]] = ???
-  //Kleisli(req => OptionT.liftF(Forbidden(req.authInfo)))
+  private val onFailure: Kleisli[OptionT[F, *], AuthedRequest[F, String], Response[F]] =
+    Kleisli(req => OptionT.liftF(Forbidden(req.context)))
 
   private val errorHandler: PartialFunction[Throwable, F[Response[F]]] = { case unknown @ _ =>
     InternalServerError(show"Unknown error: ${unknown.getMessage()}")

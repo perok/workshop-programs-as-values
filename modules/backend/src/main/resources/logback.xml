@@ -9,6 +9,7 @@
   </appender>
 
   <logger name="liquibase" level="WARN"/>
+  <logger name="org.flywaydb" level="WARN"/>
 
   <root level="debug">
     <appender-ref ref="STDOUT" />

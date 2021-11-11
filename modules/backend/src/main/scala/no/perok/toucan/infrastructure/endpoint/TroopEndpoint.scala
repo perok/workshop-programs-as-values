@@ -1,14 +1,14 @@
 package no.perok.toucan.infrastructure.endpoint
 
-import cats.syntax.all._
 import cats.effect._
-import org.http4s._
-import org.http4s.dsl.Http4sDsl
-import org.http4s.circe._
+import cats.syntax.all._
 import io.circe.syntax.EncoderOps
 import no.perok.toucan.domain.TroopProgram
 import no.perok.toucan.domain.algebras.{TroopAlgebra, VoteAlgebra}
 import no.perok.toucan.domain.models._
+import org.http4s._
+import org.http4s.circe._
+import org.http4s.dsl.Http4sDsl
 
 //import org.postgresql.util.PSQLException
 
@@ -27,14 +27,14 @@ class TroopEndpoint[F[_]: Concurrent](
     case GET -> Root / "troop" as user =>
       troopAlgebra
         .listTroopsFor(user.id)
-        .flatMap(a => Ok(a.asJson))
+        .map(a => Response[F]().withEntity(a.asJson))
 
     case GET -> Root / "troop" / TroopIdVar(id) as _ =>
       // TODO get all troop data? users, movies
       // TODO use user id to ensure person has access
       for {
         troop <- troopAlgebra.getTroop(id)
-        result <- troop.fold(NoContent())(a => Ok(a.asJson))
+        result = troop.fold(Response[F](Status.NoContent))(a => Response[F]().withEntity(a.asJson))
       } yield result
 
     // TODO Add movie (TheMovieDB.Id) to Troop.
@@ -47,7 +47,7 @@ class TroopEndpoint[F[_]: Concurrent](
         ) as user =>
       voteAlgebra
         .setVote(troop, movie, user.id, vote)
-        .flatMap(_.fold(NoContent())(a => Ok(a.asJson)))
+        .map(_.fold(Response[F](Status.NoContent))(a => Response[F]().withEntity(a.asJson)))
     //handler.addVoteToMovie()
 
     // TODO delete movie from Troop
@@ -58,7 +58,13 @@ class TroopEndpoint[F[_]: Concurrent](
       req.req.decodeJson[TroopForm].flatMap { form =>
         handler
           .updateTroop(form, id, user.id)
-          .flatMap(_.fold(a => BadRequest(a.asJson), a => Ok(a.asJson)))
+          // .flatMap(_.fold(a => BadRequest(a.asJson), a => Ok(a.asJson)))
+          .map {
+            case Right(a) =>
+              Response[F]().withEntity(a.asJson)
+            case Left(a) =>
+              Response[F](Status.BadRequest).withEntity(a.asJson)
+          }
       }
 
     // Create new troop

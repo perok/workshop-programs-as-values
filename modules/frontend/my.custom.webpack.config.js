@@ -1,4 +1,4 @@
-const merge = require('webpack-merge');
+const { merge } = require('webpack-merge');
 const path = require('path');
 
 const generatedConfig = require('./scalajs.webpack.config');
@@ -14,6 +14,11 @@ module.exports = merge(generatedConfig, {
   },
   module: {
     rules: [
+      // {
+      //   test: /\.js$/,
+      //   // use loader defaults
+      //   use: ["scalajs-friendly-source-map-loader"]
+      // },
       {
         test: /\.scss$/,
         use: [

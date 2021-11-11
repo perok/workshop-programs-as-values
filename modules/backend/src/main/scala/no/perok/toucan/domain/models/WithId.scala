@@ -1,9 +1,9 @@
 package no.perok.toucan.domain.models
 
 import cats.{Eq, Show}
-import io.circe._
-import io.circe.derivation._
-import doobie._
+import doobie.*
+import io.circe.*
+import io.circe.generic.semiauto.*
 
 import scala.util.Try
 

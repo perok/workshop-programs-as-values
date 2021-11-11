@@ -1,9 +1,9 @@
 package no.perok.toucan.config
 
-import cats.syntax.all._
 import cats.effect._
-import org.typelevel.log4cats.Logger
+import cats.syntax.all._
 import org.flywaydb.core.Flyway
+import org.typelevel.log4cats.Logger
 
 private[config] object SchemaMigration {
   implicit def localLogger[F[_]: Sync]: Logger[F] =
@@ -14,7 +14,7 @@ private[config] object SchemaMigration {
     Sync[F].delay {
       val flyway = Flyway
         .configure()
-        .dataSource(db.name, db.user, db.password)
+        .dataSource(db.jdbcUrl, db.user, db.password)
         .load
 
       if (dropFirst) {

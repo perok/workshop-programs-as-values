@@ -1,7 +1,6 @@
 package no.perok.toucan.domain.algebras
 
-import no.perok.toucan.domain.models.ExpectedError
-import no.perok.toucan.domain.models._
+import no.perok.toucan.domain.models.{ExpectedError, _}
 
 trait TroopAlgebra[F[_]] {
   def listTroops: F[List[Troop]]

@@ -1,7 +1,7 @@
 package no.perok.toucan.infrastructure.endpoint
 
-import cats.syntax.option._
 import cats.effect._
+import cats.syntax.all.*
 import org.http4s._
 import org.http4s.dsl.Http4sDsl
 // import scala.concurrent.ExecutionContext.Implicits.global

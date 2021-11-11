@@ -1,20 +1,20 @@
 package no.perok.toucan
 
-import org.typelevel.log4cats.Logger
-import org.typelevel.log4cats.slf4j.Slf4jLogger
-import cats.syntax.all._
 import cats.effect._
-import org.http4s._
-import org.http4s.implicits._
-import org.http4s.server._
-import org.http4s.client._
-import org.http4s.ember.server.EmberServerBuilder
-import org.http4s.ember.client.EmberClientBuilder
+import cats.syntax.all._
 import doobie.Transactor
 import no.perok.toucan.config.{Config, DBConfig}
 import no.perok.toucan.domain.TroopProgram
-import no.perok.toucan.infrastructure.interpreter._
 import no.perok.toucan.infrastructure.endpoint._
+import no.perok.toucan.infrastructure.interpreter._
+import org.http4s._
+import org.http4s.client._
+import org.http4s.ember.client.EmberClientBuilder
+import org.http4s.ember.server.EmberServerBuilder
+import org.http4s.implicits._
+import org.http4s.server._
+import org.typelevel.log4cats.Logger
+import org.typelevel.log4cats.slf4j.Slf4jLogger
 
 object Main extends IOApp.Simple {
   implicit def localLogger[F[_]: Sync]: Logger[F] = Slf4jLogger.getLogger[F]
@@ -49,24 +49,26 @@ object Main extends IOApp.Simple {
     val userInterpreter = new UserInterpreter(xa)
 
     val handler = new TroopProgram(troopInterpreter, voteInterpreter)
+    // TODO servce static resources: sttp.tapir.resourceServerEndpoint
+    // TODO redoc documentation sttp.tapir.redoc.Redoc[IO]("")
 
     //
     // Service setup
     //
     val authenticationServices = new AuthenticationEndpoint(userInterpreter, settings)
 
-    val apiServices: HttpRoutes[F] = ???
+    val apiServices: HttpRoutes[F] = HttpRoutes.empty
 
     val routes = Router(
       ("/api/auth", authenticationServices.authenticationHttp),
       ("/api", apiServices),
       ("/public", StaticEndpoint.endpoints)
-    ).orNotFound
+    )
 
     EmberServerBuilder
       .default[F]
       .withPort(settings.server.port)
-      .withHttpApp(routes)
+      .withHttpApp(routes.orNotFound)
       .build
   }
 

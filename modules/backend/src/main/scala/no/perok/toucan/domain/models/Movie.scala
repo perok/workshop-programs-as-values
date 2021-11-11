@@ -5,3 +5,5 @@ package no.perok.toucan.domain.models
 // Title is available only for ease of DB lookups and fast "first data showing"
 // TODO should I store the json blob from TheMovieDb?
 final case class Movie(id: ID[Movie], title: String)
+    derives io.circe.Decoder,
+      io.circe.Encoder.AsObject

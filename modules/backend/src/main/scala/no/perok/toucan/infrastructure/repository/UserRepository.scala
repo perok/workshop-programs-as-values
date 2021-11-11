@@ -1,8 +1,8 @@
 package no.perok.toucan.infrastructure.repository
 
 import doobie._
-import doobie.postgres._
 import doobie.implicits._
+import doobie.postgres._
 import doobie.postgres.implicits._
 import no.perok.toucan.domain.models._
 import no.perok.toucan.infrastructure.CryptographyLogic

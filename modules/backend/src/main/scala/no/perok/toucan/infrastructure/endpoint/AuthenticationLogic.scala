@@ -1,7 +1,5 @@
 package no.perok.toucan.infrastructure.endpoint
 
-import java.time.Instant
-
 import cats.syntax.either._
 import cats.syntax.option._
 import io.circe.parser.decode
@@ -9,6 +7,8 @@ import io.circe.syntax._
 import no.perok.toucan.config.Config
 import no.perok.toucan.domain.models.{User, WithId}
 import pdi.jwt.{JwtAlgorithm, JwtCirce, JwtClaim}
+
+import java.time.Instant
 
 class AuthenticationLogic(settings: Config) {
   private val algorithm = JwtAlgorithm.HS256

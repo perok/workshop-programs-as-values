@@ -1,23 +1,22 @@
 package test.composableForms
 
 import cats.syntax.all._
-import test.composableForms.Form.Field
-import test.composableForms.Form.Form
+import test.composableForms.Form.{Field, Form}
 
 object Form {
 
   sealed trait Error
   object Error {
     object RequiredFieldIsEmpty
-    case class ValidationFailed(errror: String)
-    case class External(error: String)
+    final case class ValidationFailed(errror: String)
+    final case class External(error: String)
   }
 
 //  {-| A [`Form`](Form#Form) that can contain any type of `field`.
 //    -}
   // TODO variance?
   // TODO base
-  case class Form[values, output, field](fill: values => FilledForm[output, field])
+  final case class Form[values, output, field](fill: values => FilledForm[output, field])
 
 //  {-| Like [`Form.succeed`](Form#succeed) but not tied to a particular type of `field`.
 //    -}
@@ -148,7 +147,7 @@ you do not care about the `output` they produce. An example of this is a "repeat
 //  {-| Represents a filled form.
 //    You can obtain this by using [`fill`](#fill).
 //    -}
-  case class FilledForm[output, field](
+  final case class FilledForm[output, field](
       fields: List[FilledField[field]],
       result: Either[(Error, List[Error]), output],
       isEmpty: Boolean
@@ -156,7 +155,7 @@ you do not care about the `output` they produce. An example of this is a "repeat
 
 //  {-| Represents a filled field.
 //    -}
-  case class FilledField[field](
+  final case class FilledField[field](
       state: field,
       error: Option[Error],
       isDisabled: Boolean
@@ -202,7 +201,7 @@ you do not care about the `output` they produce. An example of this is a "repeat
 //    _ ->
 //      -- ...
 //    -}
-  case class Field[attributes, value, values](
+  final case class Field[attributes, value, values](
       value: value,
       update: value => values,
       attributes: attributes
@@ -242,7 +241,7 @@ object Base {
 //      , update : Value input -> values -> values
 //      , attributes : attrs
 //    }
-  case class FieldConfig[attrs, input, values, output](
+  final case class FieldConfig[attrs, input, values, output](
       parser: input => Either[String, output],
       value: values => Option[input],
       update: Option[input] => values => values,
@@ -283,7 +282,7 @@ object Tests {
   import Base._
 
   sealed trait InputTypes[values] // GADT? Need Dotty? or Free?
-  case class TextInput[values](lol: Base.TextField.TextField[values]) extends InputTypes[values]
+  final case class TextInput[values](lol: Base.TextField.TextField[values]) extends InputTypes[values]
 
 //  type alias Form values output =
 //    Base.Form values output (Field values)
@@ -308,7 +307,7 @@ passwordField =
     TextField.form(???)(???) //TextInput[values](config) => ???)
 
   // Login form
-  case class Login(username: String, password: String)
+  final case class Login(username: String, password: String)
   val a = Form.succeed[Any, String => String => Login, Any]((Login.apply _).curried)
 
   println(a)

@@ -2,8 +2,8 @@ package no.perok.toucan.infrastructure.interpreter
 
 import cats.data._
 import cats.effect._
-import doobie.util.transactor.Transactor
 import doobie.implicits._
+import doobie.util.transactor.Transactor
 import no.perok.toucan.domain.algebras.VoteAlgebra
 import no.perok.toucan.domain.models._
 import no.perok.toucan.infrastructure.repository.{MovieInTroopRepository, VoteRepository}

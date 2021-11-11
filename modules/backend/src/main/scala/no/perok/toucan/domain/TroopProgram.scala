@@ -1,11 +1,10 @@
 package no.perok.toucan.domain
 
 import cats._
-import cats.syntax.all._
 import cats.data.EitherT
-import no.perok.toucan.domain.models.ExpectedError
+import cats.syntax.all._
 import no.perok.toucan.domain.algebras._
-import no.perok.toucan.domain.models._
+import no.perok.toucan.domain.models.{ExpectedError, _}
 
 class TroopProgram[F[_]: Monad](troopAlgebra: TroopAlgebra[F], voteAlgebra: VoteAlgebra[F]) {
   def addTroop(newTroop: TroopForm, user: ID[User]): F[Either[ExpectedError, Troop]] = {

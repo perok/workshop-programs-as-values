@@ -1,16 +1,16 @@
 package no.perok.toucan.infrastructure.interpreter
 
-import cats.syntax.all._
 import cats.effect._
+import cats.syntax.all._
 import doobie.implicits._
 import doobie.util.transactor.Transactor
 import no.perok.toucan.domain.algebras.MovieAlgebra
 import no.perok.toucan.domain.models._
 import no.perok.toucan.infrastructure.repository.MovieRepository
-import org.http4s.implicits._
+import org.http4s.Query
 import org.http4s.circe._
 import org.http4s.client.Client
-import org.http4s.{Query}
+import org.http4s.implicits._
 
 class MovieInterpreter[F[_]: Concurrent](xa: Transactor[F], client: Client[F])
     extends MovieAlgebra[F] {

@@ -1,7 +1,7 @@
 package no.perok.toucan.config
 
-import cats.syntax.all._
 import cats.effect._
+import cats.syntax.all._
 import doobie._
 import org.typelevel.log4cats.Logger
 
