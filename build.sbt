@@ -31,11 +31,11 @@ inThisBuild(
     Compile / doc / sources := Seq.empty,
 
     // flags
-    scalacOptions ++= Seq("-new-syntax", "-indent")
+    scalacOptions ++= Seq("-new-syntax", "-indent", "-source", "3.1")
   )
 )
 
-val settingsOvveride = Seq(
+val commonSettings = Seq(
   // TODO this does not work for inThisBuild
   libraryDependencies ++= Seq(
     // Standard lib
@@ -85,59 +85,47 @@ lazy val root = (project in file("."))
 lazy val shared = (crossProject(JSPlatform, JVMPlatform)
   .crossType(CrossType.Pure) in file("modules/shared"))
   .settings(
-    settingsOvveride
+    commonSettings
   )
   .jvmSettings(name := "sharedJVM")
   .jsSettings(name := "sharedJS")
 
 lazy val backend = (project in file("modules/backend"))
   .enablePlugins(WebScalaJSBundlerPlugin) // TODO needed?
+  .enablePlugins(JavaAppPackaging, DockerPlugin)
   .dependsOn(shared.jvm)
   .configs(IntegrationTest)
   .settings(
     Defaults.itSettings,
-    settingsOvveride,
+    commonSettings,
     libraryDependencies ++= backendDependencies,
     Test / fork := true,
     reStart / envVars := Map("APP_ENV" -> "development"),
     reStart / javaOptions ++= Seq(
       "-Dcats.effect.tracing.mode=full"
     ),
-    // Support stopping the running server
-    reStart / mainClass := Some("no.perok.toucan.Main"),
     // Setup scala.js bundler integration. Access of build artifacts and
     // development compile reloading
     scalaJSProjects := Seq(frontend),
     pipelineStages := Seq(scalaJSPipeline),
-    //compile in Compile := ((compile in Compile) dependsOn scalaJSPipeline).value,
-    //pipelineStages := Seq(digest, gzip),
-    // TODO burdde disse to være i frontend prosjektet?
-//    WebKeys.packagePrefix in Assets := "public/", // TODO er denne nødvendig? - ser ikke ut til det
-//    // Automatically add the production-ready assets to classpath
-//    (managedClasspath in Runtime) += (packageBin in Assets).value,
-//    // TODO Vil bli lagt til i resources pa ferdig bygg?
-//    unmanagedResourceDirectories in Assets ++= Seq(
-//      (baseDirectory in frontend).value / "src" / "main" / "public"
-//    ),
     // Allows to read the generated JS on client
     Compile / resources += (frontend / Compile / fastOptJS).value.data,
     // Lets the backend to read the .map file for js
     Compile / resources += (frontend / Compile / fastOptJS).value
       .map((x: sbt.File) => new File(x.getAbsolutePath + ".map"))
       .data,
-    // Lets the server read the jsdeps file
-    // Outcommented on 1.0 scalajs TODO
-    // (managedResources in Compile) += (artifactPath in (frontend, Compile, packageJSDependencies)).value,
     // do a fastOptJS on reStart
     reStart := (reStart dependsOn ((frontend / Compile / fastOptJS))).evaluated,
+    // TODO must this be done for all assets to be copied? https://scalacenter.github.io/scalajs-bundler/cookbook.html#how-to-get-and-use-a-list-of-assets
+
     // This settings makes reStart to rebuild if a scala.js file changes on the client
-    watchSources ++= (frontend / watchSources).value
-    // Setup Docker
-    /* dockerBaseImage := "eclipse-temurin:8-jre-focal", */
-    /* dockerEnvVars := Map("TZ" -> "Europe/Oslo"), */
-    /* dockerExposedPorts ++= Seq(8080), */
-    /* Docker / packageName := "applicationcalculation", */
-    /* dockerRepository := Some("sgfinans") */
+    /* watchSources ++= (frontend / watchSources).value, */
+    /* // Setup Docker */
+    dockerBaseImage := "eclipse-temurin:8-jre-focal",
+    dockerEnvVars := Map("TZ" -> "Europe/Oslo"),
+    dockerExposedPorts ++= Seq(8081),
+    Docker / packageName := "test",
+    dockerRepository := Some("perok")
   )
 
 lazy val frontend = (project in file("modules/frontend"))
@@ -145,7 +133,7 @@ lazy val frontend = (project in file("modules/frontend"))
   .disablePlugins(RevolverPlugin)
   .dependsOn(shared.js)
   .settings(
-    settingsOvveride,
+    commonSettings,
     /* Frontend dependencies settings */
     libraryDependencies ++= Seq(
       // TODO http4s client

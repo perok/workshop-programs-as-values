@@ -29,7 +29,7 @@ class TroopServiceSpec extends CatsEffectSuite {
     def listTroops: IO[List[Troop]] = ???
     def listTroopsFor(user: ID[User]): IO[List[UserInTroop]] = ???
     def getTroop(id: ID[Troop]): IO[Option[Troop]] = {
-      IO.pure(if (id === testTroop.id) testTroop.model.some else None)
+      IO.pure(if (id === testTroop.id) then testTroop.model.some else None)
     }
     def updateTroop(id: ID[Troop], newTroop: TroopForm): IO[Troop] = ???
     def insertTroop(newTroop: TroopForm): IO[Either[ExpectedError, WithId[Troop]]] = ???

@@ -12,6 +12,11 @@ module.exports = merge(generatedConfig, {
       }
     }
   },
+  output: {
+    // TODO how to get this to work? Shuld get all assets within
+    // resources/assets - https://github.com/scalacenter/scalajs-bundler/issues/154
+    path:  path.join(generatedConfig.output.path, "assets")
+  },
   module: {
     rules: [
       // {

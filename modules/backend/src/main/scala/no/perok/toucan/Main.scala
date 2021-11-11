@@ -59,6 +59,21 @@ object Main extends IOApp.Simple:
 
     val apiServices: HttpRoutes[F] = HttpRoutes.empty
 
+    val staticIndex = {
+      import org.http4s.*
+      import org.http4s.dsl.*
+      object dsl extends Http4sDsl[F]
+      import dsl.*
+
+      HttpRoutes.of[F] { case request @ GET -> Root / "index.html" =>
+        StaticFile
+          .fromResource("index.html", Some(request))
+          .getOrElseF(NotFound())
+      }
+    }
+    import org.http4s.server.staticcontent._
+    val staticAssets = resourceServiceBuilder[F]("/assets").toRoutes
+
     val routes = Router(
       ("/api/auth", authenticationServices.authenticationHttp),
       ("/api", apiServices),
@@ -68,6 +83,5 @@ object Main extends IOApp.Simple:
     EmberServerBuilder
       .default[F]
       .withPort(settings.server.port)
-      .withHttpApp(routes.orNotFound)
+      .withHttpApp((routes <+> staticIndex <+> staticAssets).orNotFound)
       .build
-
