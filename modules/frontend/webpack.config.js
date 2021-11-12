@@ -19,13 +19,18 @@ module.exports = {
     compress: true,
     hot: true,
     port: 8080,
+    proxy: {
+      '/api': {
+        target: 'localhost:8081',
+        secure: false
+      }
+    }
   },
-
-  // resolve: {
-  //   alias: {
-  //     Sources: path.resolve(__dirname, '../../../../src/main')
-  //   }
-  // }
+  resolve: {
+    alias: {
+      Sources: path.resolve(__dirname, './src/main')
+    }
+  },
   module: {
     rules: [
       // Images

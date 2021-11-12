@@ -8,9 +8,9 @@ import fs2.Stream
 import scala.scalajs.js
 import scala.scalajs.js.annotation.JSImport
 
-// @JSImport("Sources/scss/main.scss", JSImport.Default)
-// @js.native
-// object assets extends js.Object
+@JSImport("Sources/css/style.css", JSImport.Default)
+@js.native
+object assets extends js.Object
 
 // @JSImport("uikit", JSImport.Default)
 // @js.native
@@ -121,14 +121,14 @@ object utils:
   }
 
 object ReactApp extends IOApp.Simple:
-  // def require(): Unit =
-  //   assets
+  def require(): Unit =
+    assets
   //   UIKit
   //   UIKitIcons
   //   ()
 
   val run: IO[Unit] =
-    // require()
+    require()
     // UIKit.use(UIKitIcons)
     // UIKit.notification("UIKit loaded")
 
@@ -142,6 +142,7 @@ object ReactApp extends IOApp.Simple:
     import org.scalajs.dom.document
 
     val Root = div(
+      h1("Hello", className := "bg-red-900 text-white"),
       button("Hei", onClick --> result.void),
       ol(id := "my-list", lang := "en", margin := 8.px, li("Item 1"), li("Item 2")),
       Main.Main()
