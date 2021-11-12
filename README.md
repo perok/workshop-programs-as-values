@@ -43,14 +43,13 @@
 
 
 ## Scala.js
+- sbt fastLinkJS
+- npm run start
 
-- 'show web-assets:assets'
-- Spawn background server process: 'fastOptJS/startWebpackDevServer' - localhost:8080
-  - Instruct SBT to rebuild on source changes: '~fastOptJS'
-  - Shut down the background process: 'fastOptJS/stopWebpackDevServer'
-
-- Hvordan få public/main i modules/backend til å bli served?
-- Hvordan få hot reloading til å fungere
+- sbt fullLinkJS
+- npm run build
+- TODO setup output to resources folder
+- TODO setup webpack-merge with diff for dev production
 
 ## Libraries and documentation
 

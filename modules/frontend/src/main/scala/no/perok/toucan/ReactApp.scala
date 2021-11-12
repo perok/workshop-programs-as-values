@@ -8,20 +8,20 @@ import fs2.Stream
 import scala.scalajs.js
 import scala.scalajs.js.annotation.JSImport
 
-@JSImport("Sources/scss/main.scss", JSImport.Default)
-@js.native
-object assets extends js.Object
+// @JSImport("Sources/scss/main.scss", JSImport.Default)
+// @js.native
+// object assets extends js.Object
 
-@JSImport("uikit", JSImport.Default)
-@js.native
-@scala.annotation.nowarn
-object UIKit extends js.Object:
-  def use(in: Any): Unit = js.native
-  def notification(in: String): Unit = js.native
+// @JSImport("uikit", JSImport.Default)
+// @js.native
+// @scala.annotation.nowarn
+// object UIKit extends js.Object:
+//   def use(in: Any): Unit = js.native
+//   def notification(in: String): Unit = js.native
 
-@js.native
-@JSImport("uikit/dist/js/uikit-icons", JSImport.Default)
-object UIKitIcons extends js.Object
+// @js.native
+// @JSImport("uikit/dist/js/uikit-icons", JSImport.Default)
+// object UIKitIcons extends js.Object
 
 object Main:
   import japgolly.scalajs.react._
@@ -121,16 +121,16 @@ object utils:
   }
 
 object ReactApp extends IOApp.Simple:
-  def require(): Unit =
-    assets
-    UIKit
-    UIKitIcons
-    ()
+  // def require(): Unit =
+  //   assets
+  //   UIKit
+  //   UIKitIcons
+  //   ()
 
   val run: IO[Unit] =
-    require()
-    UIKit.use(UIKitIcons)
-    UIKit.notification("UIKit loaded")
+    // require()
+    // UIKit.use(UIKitIcons)
+    // UIKit.notification("UIKit loaded")
 
     import no.perok.toucan.domain.model.ApiRequest
     import no.perok.toucan.domain.model.ApiRequest._
@@ -147,5 +147,5 @@ object ReactApp extends IOApp.Simple:
       Main.Main()
     )
 
-    IO.delay(Root.renderIntoDOM(document.getElementById("container"))) >>
+    IO.delay(Root.renderIntoDOM(document.getElementById("root"))) >>
       IO.never

@@ -14,4 +14,3 @@ addSbtPlugin("com.github.sbt" % "sbt-native-packager" % "1.9.6")
 // Scala.js
 addSbtPlugin("org.portable-scala" % "sbt-scalajs-crossproject" % "1.1.0")
 addSbtPlugin("org.scala-js" % "sbt-scalajs" % "1.7.1")
-addSbtPlugin("ch.epfl.scala" % "sbt-web-scalajs-bundler" % "0.20.0")

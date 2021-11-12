@@ -1,8 +1,6 @@
 import Dependencies._
 
-/* Global / onChangedBuildSource := ReloadOnSourceChanges */
-
-Global / onLoad ~= (_.compose(s => "dependencyUpdates" :: s))
+/* Global / onLoad ~= (_.compose(s => "dependencyUpdates" :: s)) */
 
 addCommandAlias("fix", "all compile:scalafix test:scalafix")
 addCommandAlias(
@@ -91,7 +89,6 @@ lazy val shared = (crossProject(JSPlatform, JVMPlatform)
   .jsSettings(name := "sharedJS")
 
 lazy val backend = (project in file("modules/backend"))
-  .enablePlugins(WebScalaJSBundlerPlugin) // TODO needed?
   .enablePlugins(JavaAppPackaging, DockerPlugin)
   .dependsOn(shared.jvm)
   .configs(IntegrationTest)
@@ -104,32 +101,18 @@ lazy val backend = (project in file("modules/backend"))
     reStart / javaOptions ++= Seq(
       "-Dcats.effect.tracing.mode=full"
     ),
-    // Setup scala.js bundler integration. Access of build artifacts and
-    // development compile reloading
-    scalaJSProjects := Seq(frontend),
-    pipelineStages := Seq(scalaJSPipeline),
-    // Allows to read the generated JS on client
-    Compile / resources += (frontend / Compile / fastOptJS).value.data,
-    // Lets the backend to read the .map file for js
-    Compile / resources += (frontend / Compile / fastOptJS).value
-      .map((x: sbt.File) => new File(x.getAbsolutePath + ".map"))
-      .data,
-    // do a fastOptJS on reStart
-    reStart := (reStart dependsOn ((frontend / Compile / fastOptJS))).evaluated,
-    // TODO must this be done for all assets to be copied? https://scalacenter.github.io/scalajs-bundler/cookbook.html#how-to-get-and-use-a-list-of-assets
-
     // This settings makes reStart to rebuild if a scala.js file changes on the client
     /* watchSources ++= (frontend / watchSources).value, */
     /* // Setup Docker */
     dockerBaseImage := "eclipse-temurin:8-jre-focal",
     dockerEnvVars := Map("TZ" -> "Europe/Oslo"),
-    dockerExposedPorts ++= Seq(8081),
+    dockerExposedPorts ++= Seq(8080),
     Docker / packageName := "test",
     dockerRepository := Some("perok")
   )
 
 lazy val frontend = (project in file("modules/frontend"))
-  .enablePlugins(ScalaJSPlugin, ScalaJSBundlerPlugin)
+  .enablePlugins(ScalaJSPlugin)
   .disablePlugins(RevolverPlugin)
   .dependsOn(shared.js)
   .settings(
@@ -151,49 +134,9 @@ lazy val frontend = (project in file("modules/frontend"))
       "com.github.japgolly.scalajs-react" %%% "extra-ext-monocle3" % scalaJsReact,
       "com.github.japgolly.scalajs-react" %%% "test" % scalaJsReact % Test
     ),
-    /* WebPack code dependencies settings */
-    Compile / npmDependencies ++= Seq(
-      "react" -> "17.0.2",
-      "react-dom" -> "17.0.2"
-    ),
-    Compile / npmDevDependencies ++= Seq(
-      /* https://github.com/scalacenter/scalajs-bundler/issues/173 */
-      /* "scalajs-friendly-source-map-loader" -> "0.1.5", */
-      "auth0-js" -> "9.8.0",
-      "uikit" -> "3.7.4", // todo npm dependencies???
-      "webpack-merge" -> "5.8.0",
-      "style-loader" -> "0.23.1",
-      "extract-loader" -> "3.1.0",
-      "file-loader" -> "2.0.0",
-      "css-loader" -> "1.0.1",
-      "sass-loader" -> "10.2.0",
-      "sass" -> "1.42.1"
-    ),
-    /* Scala.Js settings */
-    scalaJSUseMainModuleInitializer := true, // Is an application, not a library
-    /* Frontend compilation settings */
-    Compile / packageJSDependencies / crossTarget := (Compile / resourceManaged).value,
-
-    //
-    /* WebPack setup settings */
-    // TODO see https://github.com/scalacenter/scalajs-bundler/issues/314
-    // https://appddeevvmeanderings.blogspot.com/2017
-    // Perhaps run the entire thing with create-react-app slightly
-    // configured
-    webpack / version := "4.46.0",
-    webpackConfigFile := Some(baseDirectory.value / "my.custom.webpack.config.js"),
-    webpackExtraArgs := Seq("--mode=development"),
-    webpackEmitSourceMaps := false,
-
-    // Webpack dev server
-    startWebpackDevServer / version := "3.11.2",
-    webpackDevServerPort := 8080,
-    fastOptJS / webpackDevServerExtraArgs ++= Seq(
-      // For index.html i root mappa
-      "--content-base",
-      (ThisBuild / baseDirectory).value.getAbsolutePath
-    ),
-    // Reload page on every change
-    // TODO --inline reloads the page. But does it hot reload?
-    webpackDevServerExtraArgs := Seq("--inline", "--color", "--mode=development")
+    scalaJSUseMainModuleInitializer := true,
+    scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.ESModule) }
+    /*   "auth0-js" -> "9.8.0", */
+    /*   "uikit" -> "3.7.4", // todo npm dependencies??? */
+    /*   "webpack-merge" -> "5.8.0", */
   )
