@@ -41,6 +41,9 @@
 - https://github.com/brettwooldridge/HikariCP
 - Omskriv til denne stilen: https://github.com/pheymann/meetup-with-functions-and-monads-into-the-rabbit-hole
 
+## dev
+- ./startDb.sh
+- sbt 'reStart; ~fastLinkJS'
 
 ## Scala.js
 - sbt fastLinkJS
@@ -50,6 +53,7 @@
 - npm run build
 - TODO setup output to resources folder
 - TODO setup webpack-merge with diff for dev production
+- TODO react hot reloading
 
 ## Libraries and documentation
 

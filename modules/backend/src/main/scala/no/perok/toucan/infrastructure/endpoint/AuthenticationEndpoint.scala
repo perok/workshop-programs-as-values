@@ -10,13 +10,12 @@ import no.perok.toucan.domain.models._
 import no.perok.toucan.infrastructure.CryptographyLogic
 import org.http4s._
 import org.http4s.circe._
-import org.http4s.dsl.Http4sDsl
 import org.http4s.server.AuthMiddleware
 
 import java.time.Instant
 
-class AuthenticationEndpoint[F[_]: Async](userAlgebra: UserAlgebra[F], settings: Config)
-    extends Http4sDsl[F]:
+class AuthenticationEndpoint[F[_]: Concurrent](userAlgebra: UserAlgebra[F], settings: Config)
+    extends dsl.Http4sDsl[F]:
   val tokenHandler = new AuthenticationLogic(settings)
 
   def verifyLogin(request: Request[F]): F[Either[String, WithId[User]]] =

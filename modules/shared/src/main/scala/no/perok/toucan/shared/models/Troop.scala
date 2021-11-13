@@ -1,4 +1,3 @@
-package no.perok.toucan.domain.model.api
+package no.perok.toucan.shared.models
 
 case class Troop(id: Int, name: String, movies: List[MovieInTroop])
-

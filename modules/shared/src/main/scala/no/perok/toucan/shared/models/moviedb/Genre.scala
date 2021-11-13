@@ -1,4 +1,4 @@
-package no.perok.toucan.domain.model.moviedb
+package no.perok.toucan.shared.models.moviedb
 
 import io.circe.Decoder
 

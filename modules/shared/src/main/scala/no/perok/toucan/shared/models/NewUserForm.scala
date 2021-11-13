@@ -1,3 +1,3 @@
-package no.perok.toucan.domain.model.api
+package no.perok.toucan.shared.models
 
 final case class NewUserForm(username: String, password: String, email: String)

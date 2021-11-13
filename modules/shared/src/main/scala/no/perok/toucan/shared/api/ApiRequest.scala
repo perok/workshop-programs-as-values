@@ -1,5 +1,4 @@
-package no.perok.toucan.domain.model
-// TODO package no.perok.toucan.shared.api
+package no.perok.toucan.shared.api
 
 object Data:
   import sttp.tapir.Schema

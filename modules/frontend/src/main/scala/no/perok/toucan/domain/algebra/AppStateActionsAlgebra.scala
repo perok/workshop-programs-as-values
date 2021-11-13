@@ -1,7 +1,7 @@
 package no.perok.toucan.domain.algebra
 
 import no.perok.toucan.domain.model._
-import no.perok.toucan.domain.model.moviedb._
+import no.perok.toucan.shared.models.moviedb._
 
 trait AppStateActionsAlgebra[F[_]]:
   def fetchUserData: F[AppState]

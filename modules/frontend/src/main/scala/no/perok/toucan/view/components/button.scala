@@ -6,4 +6,15 @@ package no.perok.toucan.view.components
   * to glue all the layers together. On very large codebases especially, this approach scales very,
   * very well.
   */
-class button {}
+
+import japgolly.scalajs.react._
+import japgolly.scalajs.react.vdom.all._
+
+// val Button: ScalaFnComponent.Component[String, CtorType.PropsAndChildren] =
+val Button =
+  ScalaFnComponent.withChildren[(String, Seq[TagMod])] { case ((lol, tags), children) =>
+    div(className := "bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-l",
+        lol,
+        children
+    )
+  }

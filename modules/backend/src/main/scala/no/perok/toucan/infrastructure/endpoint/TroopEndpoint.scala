@@ -2,13 +2,12 @@ package no.perok.toucan.infrastructure.endpoint
 
 import cats.effect._
 import cats.syntax.all._
-import io.circe.syntax.EncoderOps
+import io.circe.syntax._
 import no.perok.toucan.domain.TroopProgram
 import no.perok.toucan.domain.algebras.{TroopAlgebra, VoteAlgebra}
 import no.perok.toucan.domain.models._
 import org.http4s._
 import org.http4s.circe._
-import org.http4s.dsl.Http4sDsl
 
 //import org.postgresql.util.PSQLException
 
@@ -16,11 +15,7 @@ class TroopEndpoint[F[_]: Concurrent](
     handler: TroopProgram[F],
     troopAlgebra: TroopAlgebra[F],
     voteAlgebra: VoteAlgebra[F]
-) extends Http4sDsl[F]:
-  // TODO // From unknown program error to a response
-  private val errorHandler: PartialFunction[Throwable, F[Response[F]]] =
-    //case lol @ PSQLException => Conflict(s"EEEK $lol")
-    case lol @ _ => InternalServerError(s"Something bad happened: ${lol.toString()}")
+) extends dsl.Http4sDsl[F]:
 
   def endpoints: AuthedRoutes[WithId[User], F] = AuthedRoutes.of[WithId[User], F] {
     case GET -> Root / "troop" as user =>
@@ -47,7 +42,7 @@ class TroopEndpoint[F[_]: Concurrent](
       voteAlgebra
         .setVote(troop, movie, user.id, vote)
         .map(_.fold(Response[F](Status.NoContent))(a => Response[F]().withEntity(a.asJson)))
-    //handler.addVoteToMovie()
+    // handler.addVoteToMovie()
 
     // TODO delete movie from Troop
     case DELETE -> Root / "troop" / TroopIdVar(_) / "movie" / MovieIdVar(_) as _ =>
@@ -57,7 +52,6 @@ class TroopEndpoint[F[_]: Concurrent](
       req.req.decodeJson[TroopForm].flatMap { form =>
         handler
           .updateTroop(form, id, user.id)
-          // .flatMap(_.fold(a => BadRequest(a.asJson), a => Ok(a.asJson)))
           .map {
             case Right(a) =>
               Response[F]().withEntity(a.asJson)
@@ -71,7 +65,11 @@ class TroopEndpoint[F[_]: Concurrent](
       req.req.decodeJson[TroopForm].flatMap { form =>
         handler
           .addTroop(form, user.id)
-          .flatMap(_.fold(a => BadRequest(a.asJson), a => Ok(a.asJson)))
-          .handleErrorWith(errorHandler)
+          .map {
+            case Right(a) =>
+              Response[F]().withEntity(a.asJson)
+            case Left(a) =>
+              Response[F](Status.BadRequest).withEntity(a.asJson)
+          }
       }
   }

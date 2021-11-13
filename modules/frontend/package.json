@@ -12,6 +12,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@tailwindcss/forms": "^0.3.4",
     "clean-webpack-plugin": "^4.0.0",
     "css-loader": "^6.5.1",
     "html-webpack-plugin": "^5.5.0",

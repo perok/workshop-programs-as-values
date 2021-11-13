@@ -117,12 +117,11 @@ lazy val frontend = (project in file("modules/frontend"))
   .dependsOn(shared.js)
   .settings(
     commonSettings,
-    /* Frontend dependencies settings */
     libraryDependencies ++= Seq(
       // TODO http4s client
       // "com.softwaremill.sttp.tapir" %% "tapir-http4s-client" % tapirVersion
       // "org.http4s" %%% "http4s-dom" % "0.1.0"
-      ("com.softwaremill.sttp.tapir" %%% "tapir-sttp-client" % tapirVersion),
+      "com.softwaremill.sttp.tapir" %%% "tapir-sttp-client" % tapirVersion,
       "com.softwaremill.sttp.client3" %%% "cats" % "3.3.16",
       "io.github.cquiroz" %%% "scala-java-time" % "2.3.0", // implementations of java.time classes for Scala.JS
 

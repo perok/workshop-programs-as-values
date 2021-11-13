@@ -1,7 +1,6 @@
-package no.perok.toucan.domain.model.moviedb
+package no.perok.toucan.shared.models.moviedb
 
 import io.circe.Decoder
-// import io.circe.derivation.deriveDecoder
 
 case class MovieSearch(id: TheMovieDbId,
                        title: String,
@@ -9,6 +8,3 @@ case class MovieSearch(id: TheMovieDbId,
                        release_date: String,
                        backdrop_path: Option[String]
 ) derives Decoder
-// object MovieSearch {
-//   implicit val decoder: Decoder[MovieSearch] = deriveDecoder
-// }

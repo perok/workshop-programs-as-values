@@ -83,42 +83,15 @@ object Main:
     .render((props, count, fruit) =>
       div(
         p(s"You clicked ${count.value} times"),
+        view.components.Button("Lol", Seq(onClick --> count.modState(_ + 1)))(),
         button(
+          className := "bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-l",
           onClick --> count.modState(_ + 1),
           "Click me"
         ),
         p(s"Your favourite fruit is a ${fruit.value}!")
       )
     )
-
-object utils:
-  import sttp.tapir.client.sttp.SttpClientInterpreter
-  import sttp.client3.impl.cats.FetchCatsBackend
-
-  val tapirInterpreter = SttpClientInterpreter()
-  val backend = FetchCatsBackend[IO]()
-
-  def performTapirE[I, E, O, R](
-      e: sttp.tapir.PublicEndpoint[I, E, O, Any]
-  ): I => IO[sttp.client3.Response[Either[E, O]]] = { input =>
-    val req = tapirInterpreter
-      .toRequestThrowDecodeFailures(e, None)
-      .apply(input)
-
-    backend.send(req)
-  }
-
-  def performTapir[I, O, R](
-      e: sttp.tapir.PublicEndpoint[I, Nothing, O, Any]
-  ): I => IO[sttp.client3.Response[O]] = { input =>
-    performTapirE[I, Nothing, O, R](e)(input).map { result =>
-      val newBody = result.body match
-        case Right(res) => res
-        case Left(_) => throw new Exception("Impossible")
-
-      result.copy(body = newBody)
-    }
-  }
 
 object ReactApp extends IOApp.Simple:
   def require(): Unit =
@@ -127,16 +100,14 @@ object ReactApp extends IOApp.Simple:
   //   UIKitIcons
   //   ()
 
-  val run: IO[Unit] =
+  def run: IO[Unit] =
     require()
-    // UIKit.use(UIKitIcons)
-    // UIKit.notification("UIKit loaded")
 
-    import no.perok.toucan.domain.model.ApiRequest
-    import no.perok.toucan.domain.model.ApiRequest._
+    import no.perok.toucan.shared.api.ApiRequest
+    import no.perok.toucan.shared.api.ApiRequest._
 
     val result =
-      utils.performTapirE(ApiRequest.booksListing)((BooksFromYear("", 1), 10, ""))
+      util.requests.performTapir(ApiRequest.booksListing)((BooksFromYear("", 1), 10, ""))
 
     import japgolly.scalajs.react.vdom.all._
     import org.scalajs.dom.document

@@ -3,10 +3,8 @@ package no.perok.toucan.infrastructure.endpoint
 import cats.effect._
 import cats.syntax.all.*
 import org.http4s._
-import org.http4s.dsl.Http4sDsl
-// import scala.concurrent.ExecutionContext.Implicits.global
 
-class StaticEndpoint[F[_]: Sync] extends Http4sDsl[F]:
+class StaticEndpoint[F[_]: Sync] extends dsl.Http4sDsl[F]:
   def static(file: String, request: Request[F]): F[Response[F]] =
     StaticFile.fromResource("/" + file, request.some).getOrElseF(NotFound())
 
