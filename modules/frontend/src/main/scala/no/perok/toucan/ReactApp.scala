@@ -7,6 +7,7 @@ import fs2.Stream
 
 import scala.scalajs.js
 import scala.scalajs.js.annotation.JSImport
+import no.perok.toucan.infrastructure.interpreter.AppStateActionsInterpreter
 
 @JSImport("Sources/css/style.css", JSImport.Default)
 @js.native
@@ -96,25 +97,22 @@ object Main:
 object ReactApp extends IOApp.Simple:
   def require(): Unit =
     assets
-  //   UIKit
-  //   UIKitIcons
-  //   ()
 
   def run: IO[Unit] =
     require()
 
-    import no.perok.toucan.shared.api.ApiRequest
-    import no.perok.toucan.shared.api.ApiRequest._
+    import no.perok.toucan.shared.models.*
+    import no.perok.toucan.infrastructure.*
 
-    val result =
-      util.requests.performTapir(ApiRequest.booksListing)((BooksFromYear("", 1), 10, ""))
+    val requests = Requests[IO]
+    val appState = new AppStateActionsInterpreter(requests)
 
     import japgolly.scalajs.react.vdom.all._
     import org.scalajs.dom.document
 
     val Root = div(
       h1("Hello", className := "bg-red-900 text-white"),
-      button("Hei", onClick --> result.void),
+      button("Hei", onClick --> appState.fetchUserData.void),
       ol(id := "my-list", lang := "en", margin := 8.px, li("Item 1"), li("Item 2")),
       Main.Main()
     )

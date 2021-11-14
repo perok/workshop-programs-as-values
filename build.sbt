@@ -112,7 +112,7 @@ lazy val backend = (project in file("modules/backend"))
   )
 
 lazy val frontend = (project in file("modules/frontend"))
-  .enablePlugins(ScalaJSPlugin)
+  .enablePlugins(ScalaJSPlugin, NpmPlugin)
   .disablePlugins(RevolverPlugin)
   .dependsOn(shared.js)
   .settings(

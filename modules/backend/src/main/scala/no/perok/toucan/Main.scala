@@ -1,30 +1,42 @@
 package no.perok.toucan
 
+import cats.*
 import cats.effect._
+import cats.effect.std.Console
 import cats.syntax.all._
-import doobie.Transactor
-import no.perok.toucan.config.{Config, DBConfig}
-import no.perok.toucan.domain.TroopProgram
-import no.perok.toucan.infrastructure.endpoint._
+import no.perok.toucan.config.{SchemaMigration, Config}
+import no.perok.toucan.domain.*
 import no.perok.toucan.infrastructure.interpreter._
 import org.http4s._
 import org.http4s.client._
+import org.http4s.server._
 import org.http4s.ember.client.EmberClientBuilder
 import org.http4s.ember.server.EmberServerBuilder
 import org.http4s.implicits._
-import org.http4s.server._
+import sttp.tapir.server.ServerEndpoint
 import org.typelevel.log4cats.Logger
 import org.typelevel.log4cats.slf4j.Slf4jLogger
+import skunk.Session
+import natchez.Trace.Implicits.noop
 
 object Main extends IOApp.Simple:
   implicit def localLogger[F[_]: Sync]: Logger[F] = Slf4jLogger.getLogger[F]
 
   def run = program[IO].useForever
 
-  def program[F[_]: Async]: Resource[F, Server] =
+  def program[F[_]: Async: Console]: Resource[F, Server] =
     for {
       settings <- Resource.eval(Config.config.load[F])
-      xa <- Resource.eval(DBConfig.getXA(settings.db, dropFirst = false))
+      _ <- Resource.eval(
+        SchemaMigration
+          .migrate[F](settings.db, dropFirst = true)
+      )
+      session <- Session.pooled[F](host = "localhost",
+                                   user = settings.db.user,
+                                   database = settings.db.name,
+                                   password = Some(settings.db.password),
+                                   max = 16
+      )
 
       _ <- Resource.eval(
         Logger[F].info(
@@ -34,30 +46,48 @@ object Main extends IOApp.Simple:
 
       client <- EmberClientBuilder.default[F].build
 
-      result <- startServer[F](xa, client, settings)
+      endpoints = setupDependencies(session, client, settings)
+
+      result <- startServer[F](settings, endpoints)
     } yield result
 
-  private def startServer[F[_]: Async](xa: Transactor[F],
-                                       client: Client[F],
-                                       settings: Config
+  def setupDependencies[F[_]: MonadCancelThrow](session: Resource[F, Session[F]],
+                                                client: Client[F],
+                                                settings: Config
+  ): List[ServerEndpoint[Any, F]] =
+    import no.perok.toucan.shared.api.ApiRequest
+
+    val helloInterpreter = new HelloInterpreter[F](session)
+
+    val helloProgram = new HelloProgram[F](helloInterpreter)
+
+    List(ApiRequest.hello.serverLogicSuccess { _ =>
+      helloProgram.getHello
+    })
+
+  def startServer[F[_]: Async](
+      settings: Config,
+      endpoints: List[ServerEndpoint[Any, F]]
   ): Resource[F, Server] =
-    //
-    // DI
-    //
-    val voteInterpreter = new VoteInterpreter(xa)
-    val troopInterpreter = new TroopInterpreter(xa)
-    val userInterpreter = new UserInterpreter(xa)
+    // import sttp.tapir.server.interceptor.log.DefaultServerLog
+    // DefaultServerLog
 
-    val handler = new TroopProgram(troopInterpreter, voteInterpreter)
-    // TODO servce static resources: sttp.tapir.resourceServerEndpoint
-    // TODO redoc documentation sttp.tapir.redoc.Redoc[IO]("")
+    val httpRoutes = TapirConfiguration.routes(endpoints)
 
-    //
-    // Service setup
-    //
-    val authenticationServices = new AuthenticationEndpoint(userInterpreter, settings)
+    val documentation = {
+      import sttp.tapir.openapi.circe.yaml.*
+      import sttp.tapir.docs.openapi.OpenAPIDocsInterpreter
+      import sttp.tapir.redoc.Redoc
 
-    val apiServices: HttpRoutes[F] = HttpRoutes.empty
+      val docsAsYaml =
+        OpenAPIDocsInterpreter()
+          .serverEndpointsToOpenAPI(endpoints, "Toucan", "1.0")
+          .toYaml
+
+      val documentationEndpoints = Redoc[F]("Toucan", docsAsYaml)
+
+      TapirConfiguration.routes[F](documentationEndpoints)
+    }
 
     val staticIndex = {
       import org.http4s.*
@@ -74,14 +104,45 @@ object Main extends IOApp.Simple:
     import org.http4s.server.staticcontent._
     val staticAssets = resourceServiceBuilder[F]("/assets").toRoutes
 
-    val routes = Router(
-      ("/api/auth", authenticationServices.authenticationHttp),
-      ("/api", apiServices),
-      ("/public", StaticEndpoint.endpoints)
-    )
-
     EmberServerBuilder
       .default[F]
       .withPort(settings.server.port)
-      .withHttpApp((routes <+> staticIndex <+> staticAssets).orNotFound)
+      .withHttpApp((httpRoutes <+> documentation <+> staticIndex <+> staticAssets).orNotFound)
       .build
+
+object TapirConfiguration:
+  import sttp.tapir.*
+  import sttp.tapir.server.*
+  import sttp.tapir.server.interceptor.*
+  import sttp.tapir.server.interceptor.decodefailure.*
+
+  def errorMessage[R](ctx: DecodeFailureContext): String =
+    ctx.failure match {
+      case DecodeResult.Error(_, circeErr: io.circe.Errors) =>
+        circeErr.toList.map(_.show).mkString("\n")
+      case DecodeResult.Error(_, circeErr: io.circe.Error) =>
+        circeErr.show
+      case _ =>
+        DefaultDecodeFailureHandler.FailureMessages.failureMessage(ctx)
+    }
+
+  def decodeFailureHandler[F[_]]: DecodeFailureHandler =
+    DefaultDecodeFailureHandler.handler
+      .copy(failureMessage = errorMessage)
+
+  import org.http4s._
+  import sttp.capabilities.WebSockets
+  import sttp.capabilities.fs2.Fs2Streams
+
+  def routes[F[_]: Async](
+      endpoints: List[ServerEndpoint[Fs2Streams[F], F]]
+  ): HttpRoutes[F] =
+    import sttp.tapir.server.http4s._
+
+    val specializedErrorHandler =
+      Http4sServerOptions
+        .customInterceptors[F, F]
+        .decodeFailureHandler(decodeFailureHandler[F])
+        .options
+
+    Http4sServerInterpreter[F](specializedErrorHandler).toRoutes(endpoints)

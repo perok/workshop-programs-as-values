@@ -5,7 +5,7 @@ import cats.syntax.all._
 import org.flywaydb.core.Flyway
 import org.typelevel.log4cats.Logger
 
-private[config] object SchemaMigration:
+object SchemaMigration:
   implicit def localLogger[F[_]: Sync]: Logger[F] =
     org.typelevel.log4cats.slf4j.Slf4jLogger.getLogger
 
@@ -17,9 +17,8 @@ private[config] object SchemaMigration:
         .dataSource(db.jdbcUrl, db.user, db.password)
         .load
 
-      if (dropFirst) then
-        flyway.clean()
-      flyway.baseline()
+      if (dropFirst) then flyway.clean()
+
       flyway.migrate()
       ()
     } *> Logger[F].info("DB migration complete")

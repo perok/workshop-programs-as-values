@@ -1,7 +1,6 @@
 package no.perok.toucan.domain.models
 
 import cats.{Eq, Show}
-import doobie.*
 import io.circe.*
 import io.circe.generic.semiauto.*
 
@@ -24,7 +23,6 @@ object WithId:
 @SuppressWarnings(Array("org.wartremover.warts.Any"))
 final class ID[Tag] private (val toRaw: Int) extends AnyVal
 object ID:
-  import org.tpolecat.typename._
 
   def apply[Tag](id: Int): ID[Tag] =
     new ID(id)
@@ -37,6 +35,7 @@ object ID:
 
   implicit def jsonEncoderInstance[Tag]: Encoder[ID[Tag]] = Encoder.encodeInt.contramap(_.toRaw)
   implicit def jsonDecoderInstance[Tag]: Decoder[ID[Tag]] = Decoder.decodeInt.map(ID[Tag])
+// import org.tpolecat.typename._
 
-  implicit def phantomIdMeta[T](implicit tt: TypeName[ID[T]]): Meta[ID[T]] =
-    Meta[Int].timap(ID[T])(a => a.toRaw)
+// implicit def phantomIdMeta[T](implicit tt: TypeName[ID[T]]): Meta[ID[T]] =
+//   Meta[Int].timap(ID[T])(a => a.toRaw)

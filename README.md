@@ -1,39 +1,39 @@
-- https://github.com/gbogard/scala3-nextjs-template
-- [ ] Make it compile again
-- [ ] Cleanup unwanted stuff
+# Scala3 template with CE3, Tapir and scalajs-react
+
+Fullstack setup using shared Tapir API models that the defines the backend API and reuses
+it in the frontend.
+
+- Use React in the frontend with scalajs-react and tailwindcss for styling.
+- Build the backend with Flyway for maintaining the Postgres schema and create
+  queries with [Skunk](https://tpolecat.github.io/skunk/).
+- Testing with weaver and testcontainers.
+- Create a deployable application with sbt-native-packager.
+- Go to localhost:8080/docs for OpenAPI documentation from Tapir.
+
+All this with Scala 3, have a nice day!
+
+
+TODO
+- simplified compile
+- simplify package name, backend, shared, frontend as top level names
+- archunit
+- move out some of the extra scalajs-react stuff as well?
+- create template repository
+
+
+ https://github.com/gbogard/scala3-nextjs-template
 
 - /backend - tapir http4s backend, skunk
 - /shared
     - /api Tapir and communication models
-- /frontned -  scala.js-react v2
-
-- Things:
-  - Tapir https://github.com/softwaremill/tapir
-  - Refined
-  - Circe -> json
-  - testcontainers -> db tests
-
-
-# Strategi
-
-- Postgres lokal i starten
-  - `docker run --name some-postgres -p 5432:5432 -e POSTGRES_PASSWORD=mysecretpassword -d postgres:9.6.3`
+- /frontend -  scala.js-react v2
 
 ## CLOSER TODO
 
-- Doobie to Skunk
-- https://github.com/fthomas/refined
 - Effekter: https://cssfx.dev/ (loading, knapper, osv)
 - Bytt til funksjonell WithId (må ha case class for Id'er)
 - Frontend
   - Pure rendering. Sjekk kun referanse diff
-- PROBLEM INTELLIJ https://github.com/scalacenter/scalajs-bundler/issues/189
-  - Problemet er npm, path og intellij. "Fiksa" med sbt i term?
-- Filter havner i backend/target/web/.../..{js|html} men hvordan få Http4s til å serve de?
-  - Blir de i det heletatt pakka med av revolver?
-  - Pakke med i sbt-assemly
-  - Hva er pathen mot de?
-- https://www.scala-lang.org/2019/10/17/dependency-management.html
 
 
 ## TODO
@@ -44,6 +44,11 @@
 ## dev
 - ./startDb.sh
 - sbt 'reStart; ~fastLinkJS'
+
+###  Testing
+
+- sbt test
+- sbt it:test
 
 ## Scala.js
 - sbt fastLinkJS
@@ -57,16 +62,3 @@
 
 ## Libraries and documentation
 
-- Byggverktøy: SBT
-- Core libs: [Cats (functional std lib)](), [Cats Effect (functional effects std lib]()
-- HTTP: [Tapir (OpenAPI endpoints)](https://tapir.softwaremill.com/en/latest/endpoint/basics.html) with http4s
-- DB: Doobie, Flyway
-- JSON serialization: Circe
-- Injection: https://gist.github.com/gvolpe/1454db0ed9476ed0189dcc016fd758aa#fp-for-the-win
-- Testing: mdoc
-
-
-## Testing
-
-- sbt test
-- sbt it:test
