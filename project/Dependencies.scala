@@ -2,7 +2,7 @@ import sbt._
 
 object Dependencies {
   val http4sVersion = "0.23.6"
-  val tapirVersion = "0.19.0-M16"
+  val tapirVersion = "0.19.0"
   val circeVersion = "0.14.1"
   val scalaJsReact = "2.0.0"
   val monocleVersion = "3.1.0"

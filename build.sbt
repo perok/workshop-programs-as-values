@@ -11,7 +11,7 @@ addCommandAlias(
 // Default settings
 inThisBuild(
   List(
-    organization := "no.perok",
+    organization := "perok",
     scalaVersion := "3.1.0",
     version := "0.1.0-SNAPSHOT",
 
@@ -42,8 +42,8 @@ val commonSettings = Seq(
     "org.typelevel" %%% "cats-effect" % "3.2.9",
     "co.fs2" %%% "fs2-core" % fs2Version,
     // Communication
-    ("com.softwaremill.sttp.tapir" %%% "tapir-core" % tapirVersion),
-    ("com.softwaremill.sttp.tapir" %%% "tapir-json-circe" % tapirVersion),
+    "com.softwaremill.sttp.tapir" %%% "tapir-core" % tapirVersion,
+    "com.softwaremill.sttp.tapir" %%% "tapir-json-circe" % tapirVersion,
     // serialization
     "io.circe" %%% "circe-core" % circeVersion,
     "io.circe" %%% "circe-parser" % circeVersion,
@@ -80,13 +80,10 @@ lazy val root = (project in file("."))
     publishLocal := {}
   )
 
-lazy val shared = (crossProject(JSPlatform, JVMPlatform)
-  .crossType(CrossType.Pure) in file("modules/shared"))
-  .settings(
-    commonSettings
-  )
-  .jvmSettings(name := "sharedJVM")
-  .jsSettings(name := "sharedJS")
+lazy val shared = crossProject(JSPlatform, JVMPlatform)
+  .crossType(CrossType.Pure)
+  .in(file("modules/shared"))
+  .settings(commonSettings)
 
 lazy val backend = (project in file("modules/backend"))
   .enablePlugins(JavaAppPackaging, DockerPlugin)
