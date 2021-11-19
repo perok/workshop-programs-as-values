@@ -34,6 +34,7 @@ TODO
 - Bytt til funksjonell WithId (må ha case class for Id'er)
 - Frontend
   - Pure rendering. Sjekk kun referanse diff
+- webpack to vite? https://vitejs.dev/
 
 
 ## TODO

@@ -1,9 +1,9 @@
 package test
 // package morespecific TODO structure like this
-import cats.effect._
+import cats.effect.*
 
 object test {
-  import com.dimafeng.testcontainers._
+  import com.dimafeng.testcontainers.*
 
   def containerResource[F[_]: Sync](
       container: ContainerDef

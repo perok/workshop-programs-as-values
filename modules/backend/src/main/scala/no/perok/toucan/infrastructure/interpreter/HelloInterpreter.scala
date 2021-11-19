@@ -1,8 +1,8 @@
 package no.perok.toucan.infrastructure.interpreter
 
 import cats.*
-import cats.effect._
-import cats.syntax.all._
+import cats.effect.*
+import cats.syntax.all.*
 import no.perok.toucan.domain.algebras.*
 import no.perok.toucan.shared.models.backend.*
 import no.perok.toucan.infrastructure.repository.*

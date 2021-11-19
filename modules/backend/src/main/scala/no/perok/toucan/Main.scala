@@ -1,18 +1,18 @@
 package no.perok.toucan
 
 import cats.*
-import cats.effect._
+import cats.effect.*
 import cats.effect.std.Console
-import cats.syntax.all._
+import cats.syntax.all.*
 import no.perok.toucan.config.{SchemaMigration, Config}
 import no.perok.toucan.domain.*
-import no.perok.toucan.infrastructure.interpreter._
-import org.http4s._
-import org.http4s.client._
-import org.http4s.server._
+import no.perok.toucan.infrastructure.interpreter.*
+import org.http4s.*
+import org.http4s.client.*
+import org.http4s.server.*
 import org.http4s.ember.client.EmberClientBuilder
 import org.http4s.ember.server.EmberServerBuilder
-import org.http4s.implicits._
+import org.http4s.implicits.*
 import sttp.tapir.server.ServerEndpoint
 import org.typelevel.log4cats.Logger
 import org.typelevel.log4cats.slf4j.Slf4jLogger
@@ -26,7 +26,7 @@ object Main extends IOApp.Simple:
 
   def program[F[_]: Async: Console]: Resource[F, Server] =
     for {
-      settings <- Resource.eval(Config.config.load[F])
+      settings <- Resource.eval(Config.load.load[F])
       _ <- Resource.eval(
         SchemaMigration
           .migrate[F](settings.db, dropFirst = true)
@@ -69,9 +69,6 @@ object Main extends IOApp.Simple:
       settings: Config,
       endpoints: List[ServerEndpoint[Any, F]]
   ): Resource[F, Server] =
-    // import sttp.tapir.server.interceptor.log.DefaultServerLog
-    // DefaultServerLog
-
     val httpRoutes = TapirConfiguration.routes(endpoints)
 
     val documentation = {
@@ -101,7 +98,7 @@ object Main extends IOApp.Simple:
           .getOrElseF(NotFound())
       }
     }
-    import org.http4s.server.staticcontent._
+    import org.http4s.server.staticcontent.*
     val staticAssets = resourceServiceBuilder[F]("/assets").toRoutes
 
     EmberServerBuilder
@@ -127,17 +124,17 @@ object TapirConfiguration:
     }
 
   def decodeFailureHandler[F[_]]: DecodeFailureHandler =
-    DefaultDecodeFailureHandler.handler
+    DefaultDecodeFailureHandler.default
       .copy(failureMessage = errorMessage)
 
-  import org.http4s._
+  import org.http4s.*
   import sttp.capabilities.WebSockets
   import sttp.capabilities.fs2.Fs2Streams
 
   def routes[F[_]: Async](
       endpoints: List[ServerEndpoint[Fs2Streams[F], F]]
   ): HttpRoutes[F] =
-    import sttp.tapir.server.http4s._
+    import sttp.tapir.server.http4s.*
 
     val specializedErrorHandler =
       Http4sServerOptions

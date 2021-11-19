@@ -1,11 +1,11 @@
 // package no.perok.toucan.infrastructure.repository
 
-// import munit._
+// import munit.*
 // import org.typelevel.log4cats.Logger
 // import org.typelevel.log4cats.slf4j.Slf4jLogger
-// import cats.effect._
-// import doobie._
-// import no.perok.toucan.domain.models._
+// import cats.effect.*
+// import doobie.*
+// import no.perok.toucan.domain.models.*
 // import com.dimafeng.testcontainers.PostgreSQLContainer
 // import com.dimafeng.testcontainers.munit.TestContainerForAll
 

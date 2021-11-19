@@ -7,8 +7,8 @@ package no.perok.toucan.view.components
   * very well.
   */
 
-import japgolly.scalajs.react._
-import japgolly.scalajs.react.vdom.all._
+import japgolly.scalajs.react.*
+import japgolly.scalajs.react.vdom.all.*
 
 // val Button: ScalaFnComponent.Component[String, CtorType.PropsAndChildren] =
 val Button =

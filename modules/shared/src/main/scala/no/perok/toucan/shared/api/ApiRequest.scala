@@ -3,8 +3,8 @@ package no.perok.toucan.shared.api
 import no.perok.toucan.shared.models.backend.Name
 
 object ApiRequest:
-  import sttp.tapir._
-  import sttp.tapir.json.circe._
+  import sttp.tapir.*
+  import sttp.tapir.json.circe.*
 
   val hello: PublicEndpoint[Unit, Nothing, Name, Any] =
     infallibleEndpoint.get

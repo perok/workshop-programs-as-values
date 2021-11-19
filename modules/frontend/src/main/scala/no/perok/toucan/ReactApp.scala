@@ -1,8 +1,8 @@
 package no.perok.toucan
 
-import cats._
-import cats.effect._
-import cats.syntax.all._
+import cats.*
+import cats.effect.*
+import cats.syntax.all.*
 import fs2.Stream
 
 import scala.scalajs.js
@@ -25,12 +25,12 @@ object assets extends js.Object
 // object UIKitIcons extends js.Object
 
 object Main:
-  import japgolly.scalajs.react._
-  // import japgolly.scalajs.react.vdom.html_<^._
-  import japgolly.scalajs.react.vdom.all._
-  import japgolly.scalajs.react.ReactMonocle._
+  import japgolly.scalajs.react.*
+  // import japgolly.scalajs.react.vdom.html_<^.*
+  import japgolly.scalajs.react.vdom.all.*
+  import japgolly.scalajs.react.ReactMonocle.*
   import japgolly.scalajs.react.extra.StateSnapshot
-  import monocle._
+  import monocle.*
 
   val NameChanger = ScalaComponent
     .builder[StateSnapshot[String]]("Name changer")
@@ -107,7 +107,7 @@ object ReactApp extends IOApp.Simple:
     val requests = Requests[IO]
     val appState = new AppStateActionsInterpreter(requests)
 
-    import japgolly.scalajs.react.vdom.all._
+    import japgolly.scalajs.react.vdom.all.*
     import org.scalajs.dom.document
 
     val Root = div(

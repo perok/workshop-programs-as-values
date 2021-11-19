@@ -1,6 +1,6 @@
 package test.composableForms
 
-import cats.syntax.all._
+import cats.syntax.all.*
 import test.composableForms.Form.{Field, Form}
 
 object Form:
@@ -141,7 +141,7 @@ you do not care about the `output` they produce. An example of this is a "repeat
 //    -}
 //  mapField : (a -> b) -> Form values output a -> Form values output b
 
-  /// FORM OUTPUT
+  // / FORM OUTPUT
 
 //  {-| Represents a filled form.
 //    You can obtain this by using [`fill`](#fill).
@@ -160,7 +160,7 @@ you do not care about the `output` they produce. An example of this is a "repeat
       isDisabled: Boolean
   )
 
-  /// FIELD
+  // / FIELD
 
   //
 //  {-| Represents a form field.
@@ -217,8 +217,7 @@ you do not care about the `output` they produce. An example of this is a "repeat
 //  type Value a
 //  = Blank
 //  | Filled a
-  // => Option
-
+// => Option
 
 object Base:
   // TODO different kinds of Base fields
@@ -263,7 +262,6 @@ object Base:
       // TODO https://github.com/hecrj/composable-form/blob/a8dafcac4dd076e71d1a433f493f4d81eb42a6ad/src/Form/Base/TextField.elm#L66
       ???
 
-
 object View {
   // TODO
 }
@@ -274,11 +272,12 @@ object TopForm {
 
 import test.composableForms.Form.{Field, Form}
 object Tests:
-//  import Form._
-  import Base._
+//  import Form.*
+  import Base.*
 
   sealed trait InputTypes[values] // GADT? Need Dotty? or Free?
-  final case class TextInput[values](lol: Base.TextField.TextField[values]) extends InputTypes[values]
+  final case class TextInput[values](lol: Base.TextField.TextField[values])
+      extends InputTypes[values]
 
 //  type alias Form values output =
 //    Base.Form values output (Field values)
@@ -300,11 +299,10 @@ passwordField =
       config: Base.TextField.TextField[values]
   ): Form[values, output] =
     // TODO is config paramtere right? https://github.com/hecrj/composable-form/blob/2eade6914ef941f4f7365ccbd8abb0af62a1f5d9/src/Form.elm#L134
-    TextField.form(???)(???) //TextInput[values](config) => ???)
+    TextField.form(???)(???) // TextInput[values](config) => ???)
 
   // Login form
   final case class Login(username: String, password: String)
   val a = Form.succeed[Any, String => String => Login, Any]((Login.apply _).curried)
 
   println(a)
-
