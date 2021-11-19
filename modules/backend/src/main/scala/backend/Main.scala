@@ -13,6 +13,7 @@ import org.http4s.implicits.*
 import sttp.tapir.server.ServerEndpoint
 import org.typelevel.log4cats.Logger
 import org.typelevel.log4cats.slf4j.Slf4jLogger
+import com.comcast.ip4s.*
 import skunk.Session
 import natchez.Trace.Implicits.noop
 import backend.infrastructure.interpreter.*
@@ -20,9 +21,12 @@ import backend.domain.*
 import backend.config.*
 
 object Main extends IOApp.Simple:
-  implicit def localLogger[F[_]: Sync]: Logger[F] = Slf4jLogger.getLogger[F]
+  given [F[_]: Sync]: Logger[F] = Slf4jLogger.getLogger[F]
 
-  def run = program[IO].useForever
+  def run =
+    program[IO]
+      .evalTap(server => Logger[IO].info(show"Server starting at ${server.address.toString}"))
+      .useForever
 
   def program[F[_]: Async: Console]: Resource[F, Server] =
     for {
@@ -36,12 +40,6 @@ object Main extends IOApp.Simple:
                                    database = settings.db.name,
                                    password = Some(settings.db.password),
                                    max = 16
-      )
-
-      _ <- Resource.eval(
-        Logger[F].info(
-          show"Server starting at http://localhost:${settings.server.port}/"
-        )
       )
 
       client <- EmberClientBuilder.default[F].build
@@ -103,7 +101,7 @@ object Main extends IOApp.Simple:
 
     EmberServerBuilder
       .default[F]
-      .withPort(settings.server.port)
+      .withPort(port"8081")
       .withHttpApp((httpRoutes <+> documentation <+> staticIndex <+> staticAssets).orNotFound)
       .build
 

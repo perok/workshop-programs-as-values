@@ -29,16 +29,12 @@ object Dependencies {
           "org.postgresql" % "postgresql" % "42.3.1" // only for flyway
       )
 
-    val crypto: Seq[ModuleID] = Seq(
+    val crypto = Seq(
       "com.github.jwt-scala" %% "jwt-circe" % "9.0.2",
       "org.mindrot" % "jbcrypt" % "0.4"
     )
 
-    val testLibs: Seq[ModuleID] = Seq(
-      // TODO weaver
-      "org.scalameta" %% "munit" % "0.7.29",
-      "org.typelevel" %% "munit-cats-effect-3" % "1.0.6",
-      "com.dimafeng" %% "testcontainers-scala-munit" % testcontainersScalaVersion,
+    val testLibs = Seq(
       "com.dimafeng" %% "testcontainers-scala-postgresql" % testcontainersScalaVersion
     ).map(_ % "it,test")
 

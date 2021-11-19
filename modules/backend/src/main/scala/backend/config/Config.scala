@@ -1,18 +1,14 @@
 package backend.config
 
 import ciris.*
-import com.comcast.ip4s.*
 
-final case class ServerConfig(port: Port)
-final case class DB(name: String, user: String, password: String):
+final case class DB(name: String, user: String, password: String, port: Int = 5432):
   // def jdbcUrl = s"jdbc:postgresql:$name"
-  def jdbcUrl = s"jdbc:postgresql://localhost:5432/$name"
+  def jdbcUrl = s"jdbc:postgresql://localhost:$port/$name"
 
-final case class Config(environment: String, tokenSecret: String, server: ServerConfig, db: DB)
+final case class Config(environment: String, tokenSecret: String, db: DB)
 
 object Config:
   val load = env("APP_ENV")
     .as[String]
-    .map(env =>
-      Config(env, "", ServerConfig(port"8081"), DB("postgres", "postgres", "mysecretpassword"))
-    )
+    .map(env => Config(env, "", DB("postgres", "postgres", "mysecretpassword")))

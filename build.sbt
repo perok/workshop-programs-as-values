@@ -11,9 +11,7 @@ addCommandAlias(
 // Default settings
 inThisBuild(
   List(
-    organization := "perok",
     scalaVersion := "3.1.0",
-    version := "0.1.0-SNAPSHOT",
 
     // Scalafix
     semanticdbEnabled := true,
@@ -52,6 +50,7 @@ val commonSettings = Seq(
     "eu.timepit" %%% "refined" % "0.9.27"
     /* "eu.timepit" %%% "refined-cats" % "0.9.27" */
   ),
+  testFrameworks += new TestFramework("weaver.framework.CatsEffect"),
   // Disable fatal warning from sbt-tpolecat plugin when developing
   Test / scalacOptions -= "-Xfatal-warnings",
   scalacOptions --= {
@@ -61,15 +60,6 @@ val commonSettings = Seq(
       Seq.empty
   }
 )
-
-// TODO
-/* testFrameworks += new TestFramework("weaver.framework.CatsEffect") */
-
-// Ensure that `run` can be stopped with `C-c`
-Global / cancelable := true
-run / fork := true
-
-publish / skip := true
 
 lazy val root = (project in file("."))
   .disablePlugins(RevolverPlugin)
@@ -97,15 +87,15 @@ lazy val backend = (project in file("modules/backend"))
     reStart / envVars := Map("APP_ENV" -> "development"),
     reStart / javaOptions ++= Seq(
       "-Dcats.effect.tracing.mode=full"
-    ),
+    )
     // This settings makes reStart to rebuild if a scala.js file changes on the client
     /* watchSources ++= (frontend / watchSources).value, */
     /* // Setup Docker */
-    dockerBaseImage := "eclipse-temurin:8-jre-focal",
-    dockerEnvVars := Map("TZ" -> "Europe/Oslo"),
-    dockerExposedPorts ++= Seq(8080),
-    Docker / packageName := "test",
-    dockerRepository := Some("perok")
+//    dockerBaseImage := "eclipse-temurin:8-jre-focal",
+//    dockerEnvVars := Map("TZ" -> "Europe/Oslo"),
+//    dockerExposedPorts ++= Seq(8080),
+//    Docker / packageName := "test",
+//    dockerRepository := Some("perok")
   )
 
 lazy val frontend = (project in file("modules/frontend"))
