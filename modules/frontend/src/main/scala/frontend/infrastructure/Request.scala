@@ -1,8 +1,8 @@
 package frontend.infrastructure
 
 import cats.effect.*
-import sttp.client3.*
 import sttp.capabilities.WebSockets
+import sttp.client3.*
 import sttp.tapir.client.sttp.SttpClientInterpreter
 
 class Requests[F[_]](backend: SttpBackend[F, WebSockets]):

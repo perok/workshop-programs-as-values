@@ -7,6 +7,7 @@ import fs2.Stream
 
 import scala.scalajs.js
 import scala.scalajs.js.annotation.JSImport
+
 import frontend.infrastructure.interpreter.AppStateActionsInterpreter
 
 @JSImport("Sources/css/style.css", JSImport.Default)

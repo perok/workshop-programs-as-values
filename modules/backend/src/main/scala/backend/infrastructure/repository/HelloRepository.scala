@@ -1,9 +1,10 @@
 package backend.infrastructure.repository
 
-import shared.models.backend.Name
 import skunk.*
-import skunk.implicits.*
 import skunk.codec.all.*
+import skunk.implicits.*
+
+import shared.models.backend.Name
 
 object HelloRepository:
   def getHello =

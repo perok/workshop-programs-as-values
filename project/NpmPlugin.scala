@@ -1,7 +1,9 @@
+import org.scalajs.sbtplugin.ScalaJSPlugin
 import sbt._
 import sbt.Keys._
 import sbt.io.{IO, Path}
 import sbt.nio.file.FileTreeView
+import org.scalajs.sbtplugin.ScalaJSPlugin.autoImport._
 
 trait NpmKeys {
   lazy val frontendInstall =
@@ -11,17 +13,20 @@ trait NpmKeys {
 
 object NpmPlugin extends AutoPlugin {
   override val trigger: PluginTrigger = noTrigger
-  // TODO scalajs plugin?
-  override val requires: Plugins = plugins.JvmPlugin
+  override val requires: Plugins = ScalaJSPlugin
 
   object autoImport extends NpmKeys
   import autoImport._
 
   override lazy val projectSettings: Seq[Setting[_]] = Seq(
     frontendInstall := frontendInstallTask.value,
-    frontendBuild := (frontendBuildTask dependsOn frontendInstallTask).value,
-    // Tell SBT to generate resources
-    Compile / resourceGenerators += frontendBuildTask.taskValue
+    // TODO fullLinkJS
+    // TODO scalaJSLinkerOutputDirectory to webpack
+    // TODO linkJS also depends on Compile / resourceGenerators which generates cycles
+    // Builds the Scala.js code and runs webpack
+    Compile / frontendBuild := frontendBuildTask
+      .dependsOn(frontendInstall, Compile / fastLinkJS)
+      .value
   )
 
   //
@@ -52,7 +57,7 @@ object NpmPlugin extends AutoPlugin {
       // Therefore we use hash instead
       inStyle = FilesInfo.hash,
       outStyle = FilesInfo.exists
-    ) { (a: Set[File]) =>
+    ) { (_: Set[File]) =>
       val resultCode =
         Process("npm install", _frontendDirectory) ! logger
 

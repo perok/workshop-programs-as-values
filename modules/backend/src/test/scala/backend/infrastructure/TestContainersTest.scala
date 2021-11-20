@@ -1,15 +1,15 @@
 package backend
 
-import backend.config.*
-import backend.infrastructure.repository.*
 import cats.effect.*
-import com.dimafeng.testcontainers.*
-import com.dimafeng.testcontainers.PostgreSQLContainer
+import com.dimafeng.testcontainers._
+import natchez.Trace.Implicits.noop
 import org.testcontainers.lifecycle.Startable
 import org.testcontainers.utility.DockerImageName
 import skunk.Session
-import natchez.Trace.Implicits.noop
 import weaver.*
+
+import backend.config.*
+import backend.infrastructure.repository.*
 
 object TestDb extends IOSuite:
   override type Res = Session[IO]

@@ -2,10 +2,10 @@ import Dependencies._
 
 /* Global / onLoad ~= (_.compose(s => "dependencyUpdates" :: s)) */
 
-addCommandAlias("fix", "all compile:scalafix test:scalafix")
+addCommandAlias("fix", "; scalafix ; Test / scalafix ; scalafmt ; scalafmtSbt")
 addCommandAlias(
   "fixCheck",
-  "; compile:scalafix --check ; test:scalafix --check"
+  "; scalafix --check ; Test / scalafix --check ; scalafmtCheck ; scalafmtSbtCheck"
 )
 
 // Default settings
@@ -87,11 +87,12 @@ lazy val backend = (project in file("modules/backend"))
     reStart / envVars := Map("APP_ENV" -> "development"),
     reStart / javaOptions ++= Seq(
       "-Dcats.effect.tracing.mode=full"
-    )
+    ),
+    Compile / resourceGenerators += (frontend / Compile / frontendBuild)
     // This settings makes reStart to rebuild if a scala.js file changes on the client
     /* watchSources ++= (frontend / watchSources).value, */
     /* // Setup Docker */
-//    dockerBaseImage := "eclipse-temurin:8-jre-focal",
+//    dockerBaseImage := "eclipse-temurin:11-jre-focal",
 //    dockerEnvVars := Map("TZ" -> "Europe/Oslo"),
 //    dockerExposedPorts ++= Seq(8080),
 //    Docker / packageName := "test",

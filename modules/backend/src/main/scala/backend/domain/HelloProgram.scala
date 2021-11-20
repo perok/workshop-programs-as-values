@@ -2,6 +2,7 @@ package backend.domain
 
 import cats.*
 import cats.syntax.all.*
+
 import backend.domain.algebras.*
 import shared.models.backend.Name
 

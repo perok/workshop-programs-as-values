@@ -4,21 +4,22 @@ import cats.*
 import cats.effect.*
 import cats.effect.std.Console
 import cats.syntax.all.*
+import com.comcast.ip4s.*
+import natchez.Trace.Implicits.noop
 import org.http4s.*
 import org.http4s.client.*
-import org.http4s.server.*
 import org.http4s.ember.client.EmberClientBuilder
 import org.http4s.ember.server.EmberServerBuilder
 import org.http4s.implicits.*
-import sttp.tapir.server.ServerEndpoint
+import org.http4s.server.*
 import org.typelevel.log4cats.Logger
 import org.typelevel.log4cats.slf4j.Slf4jLogger
-import com.comcast.ip4s.*
 import skunk.Session
-import natchez.Trace.Implicits.noop
-import backend.infrastructure.interpreter.*
-import backend.domain.*
+import sttp.tapir.server.ServerEndpoint
+
 import backend.config.*
+import backend.domain.*
+import backend.infrastructure.interpreter.*
 
 object Main extends IOApp.Simple:
   given [F[_]: Sync]: Logger[F] = Slf4jLogger.getLogger[F]

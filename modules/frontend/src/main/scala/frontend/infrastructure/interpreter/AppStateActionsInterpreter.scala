@@ -2,6 +2,7 @@ package frontend.infrastructure.interpreter
 
 import cats.*
 import cats.syntax.all.*
+
 import frontend.domain.algebra.AppStateActionsAlgebra
 import frontend.domain.model.*
 import frontend.infrastructure.*
