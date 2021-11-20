@@ -47,8 +47,8 @@ val commonSettings = Seq(
     "io.circe" %%% "circe-parser" % circeVersion,
     // Utilities
     "dev.optics" %%% "monocle-core" % monocleVersion,
-    "eu.timepit" %%% "refined" % "0.9.27"
-    /* "eu.timepit" %%% "refined-cats" % "0.9.27" */
+    "eu.timepit" %%% "refined" % "0.9.27",
+    "eu.timepit" %%% "refined-cats" % "0.9.27"
   ),
   testFrameworks += new TestFramework("weaver.framework.CatsEffect"),
   // Disable fatal warning from sbt-tpolecat plugin when developing
@@ -65,7 +65,7 @@ lazy val root = (project in file("."))
   .disablePlugins(RevolverPlugin)
   .aggregate(backend, frontend)
   .settings(
-    name := "Toucan",
+    name := "scala3-tapir-scalajs-react",
     publish := {},
     publishLocal := {}
   )
@@ -123,7 +123,4 @@ lazy val frontend = (project in file("modules/frontend"))
     ),
     scalaJSUseMainModuleInitializer := true,
     scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.ESModule) }
-    /*   "auth0-js" -> "9.8.0", */
-    /*   "uikit" -> "3.7.4", // todo npm dependencies??? */
-    /*   "webpack-merge" -> "5.8.0", */
   )

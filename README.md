@@ -46,6 +46,18 @@ TODO
 - ./startDb.sh
 - sbt 'reStart; ~fastLinkJS'
 
+### Editors
+
+#### Intellij
+
+- Getting errors like the following in `sbt shell` window? Then use the terminal and run `sbt` directly.
+```
+[error] stack trace is suppressed; run last frontend / frontendInstall for the full output
+[error] (frontend / frontendInstall) java.io.IOException: Cannot run program "npm" (in directory "/home/perok/dev/bekk/faggruppe-fp2021/workshop-scala/modules/frontend"): error=2, No such file or directory
+[error] Total time: 0 s, completed 20. nov. 2021, 11:58:44
+```
+
+
 ###  Testing
 
 - sbt test
