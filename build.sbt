@@ -47,8 +47,8 @@ val commonSettings = Seq(
     "io.circe" %%% "circe-parser" % circeVersion,
     // Utilities
     "dev.optics" %%% "monocle-core" % monocleVersion,
-    "eu.timepit" %%% "refined" % "0.9.27",
-    "eu.timepit" %%% "refined-cats" % "0.9.27"
+    "eu.timepit" %%% "refined" % "0.9.27"
+    // "eu.timepit" %%% "refined-cats" % "0.9.27"
   ),
   testFrameworks += new TestFramework("weaver.framework.CatsEffect"),
   // Disable fatal warning from sbt-tpolecat plugin when developing
