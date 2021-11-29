@@ -58,7 +58,7 @@ module.exports = {
       filename: 'index.html', // output file
     }),
     // Only update what has changed on hot reload
-    new webpack.HotModuleReplacementPlugin(),
+    // new webpack.HotModuleReplacementPlugin(),
   ],
 
 }

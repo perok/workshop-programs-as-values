@@ -4,6 +4,7 @@ addSbtPlugin("io.spray" % "sbt-revolver" % "0.9.1")
 
 // Tools
 addSbtPlugin("org.scalameta" % "sbt-scalafmt" % "2.4.3")
+addSbtPlugin("org.scalameta" % "sbt-mdoc" % "2.2.24")
 
 // Code improvement
 addSbtPlugin("io.github.davidgregory084" % "sbt-tpolecat" % "0.1.20")

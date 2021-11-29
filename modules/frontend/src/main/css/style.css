@@ -3,3 +3,44 @@
 @tailwind components;
 
 @tailwind utilities;
+
+
+svg .rotate {
+  transform-box: fill-box;
+  transform-origin: center;
+  /* transform: rotate(45deg); */
+  animation: Spin 2s infinite linear;
+}
+
+@keyframes Spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+
+/* https://projects.verou.me/bubbly/ */
+.speech-bubble {
+	position: relative;
+	background: #26a269;
+	border-radius: .4em;
+  height: min-content;
+}
+.speech-bubble:after {
+	content: '';
+	position: absolute;
+	left: 0;
+	top: 50%;
+	width: 0;
+	height: 0;
+	border: 0.594em solid transparent;
+	border-right-color: #26a269;
+	border-left: 0;
+	border-bottom: 0;
+	margin-top: -0.297em;
+	margin-left: -0.594em;
+}
+

@@ -1,4 +1,6 @@
 
+.idea
+
 **/target/
 
 node_modules/
@@ -8,10 +10,12 @@ dist/
 
 # Created by https://www.toptal.com/developers/gitignore/api/scala,vim,intellij,visualstudiocode,git,sbt,bloop
 # Edit at https://www.toptal.com/developers/gitignore?templates=scala,vim,intellij,visualstudiocode,git,sbt,bloop
+### Metals ###
+.metals/
+project/**/metals.sbt
 
 ### Bloop ###
 .bloop/
-.metals/
 .bsp/
 
 ### Git ###

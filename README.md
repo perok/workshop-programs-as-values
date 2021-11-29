@@ -1,54 +1,43 @@
-# Scala3 template with CE3, Tapir and scalajs-react
+# Programs as values
 
-Fullstack setup using shared Tapir API models that the defines the backend API and reuses
-it in the frontend.
+## Getting started
 
-- Use React in the frontend with scalajs-react and tailwindcss for styling.
-- Build the backend with Flyway for maintaining the Postgres schema and create
-  queries with [Skunk](https://tpolecat.github.io/skunk/).
-- Testing with weaver and testcontainers.
-- Create a deployable application with sbt-native-packager.
-- Go to localhost:8080/docs for OpenAPI documentation from Tapir.
+Ensure that the following steps have been done:
 
-All this with Scala 3, have a nice day!
+- Clone this repository and go the directory
+- Install Scala tools (`./cs setup` is enough): https://docs.scala-lang.org/scala3/getting-started.html
+- Install Node tools https://nodejs.org/en/download/
 
+## Editor setup
 
-TODO
-- simplified compile
-- simplify package name, backend, shared, frontend as top level names
-- archunit
-- move out some of the extra scalajs-react stuff as well?
-- create template repository
+Use either Intellij or VSCode:
 
+- For Intellij:
+  - Ensure that `Scala` plugin is installed
+  - Ensure that your are running nightly plugin https://confluence.jetbrains.com/display/SCA/Scala+Plugin+Nightly
+  - Recommended: Format on save https://scalameta.org/scalafmt/docs/installation.html#format-on-save
+- For VSCode
+  - Install metals plugin https://scalameta.org/metals/docs/editors/vscode#installation
+  - Recommended: format on save https://stackoverflow.com/a/54665086
 
- https://github.com/gbogard/scala3-nextjs-template
+## Developing
 
-- /backend - tapir http4s backend, skunk
-- /shared
-    - /api Tapir and communication models
-- /frontend -  scala.js-react v2
+- For Intellij:
+  - View `SBT shell` tab and run `~fastLinkJS`. This will recompile to JS on file change
+  - Open terminal tab and run the following. This will run Webpack Dev Server.
+    - `cd modules/frontend`
+    - `npm install`
+    - `npm run start`
+- For VSCode:
+  - Open terminal tab and run `sbt`, then `~fastLinkJS`. This will recompile to JS on file change
+  - Open terminal tab and run the following. This will run Webpack Dev Server.
+    - `cd modules/frontend`
+    - `npm install`
+    - `npm run start`
+- Go to the file `modules/frontend/src/main/scala/frontend/Task.scala`
+- Enjoy
 
-## CLOSER TODO
-
-- Effekter: https://cssfx.dev/ (loading, knapper, osv)
-- Bytt til funksjonell WithId (må ha case class for Id'er)
-- Frontend
-  - Pure rendering. Sjekk kun referanse diff
-- webpack to vite? https://vitejs.dev/
-
-
-## TODO
-
-- https://github.com/brettwooldridge/HikariCP
-- Omskriv til denne stilen: https://github.com/pheymann/meetup-with-functions-and-monads-into-the-rabbit-hole
-
-## dev
-- ./startDb.sh
-- sbt 'reStart; ~fastLinkJS'
-
-### Editors
-
-#### Intellij
+## Problems
 
 - Getting errors like the following in `sbt shell` window? Then use the terminal and run `sbt` directly.
 ```
@@ -56,22 +45,4 @@ TODO
 [error] (frontend / frontendInstall) java.io.IOException: Cannot run program "npm" (in directory "/home/perok/dev/bekk/faggruppe-fp2021/workshop-scala/modules/frontend"): error=2, No such file or directory
 [error] Total time: 0 s, completed 20. nov. 2021, 11:58:44
 ```
-
-
-###  Testing
-
-- sbt test
-- sbt it:test
-
-## Scala.js
-- sbt fastLinkJS
-- npm run start
-
-- sbt fullLinkJS
-- npm run build
-- TODO setup output to resources folder
-- TODO setup webpack-merge with diff for dev production
-- TODO react hot reloading
-
-## Libraries and documentation
 

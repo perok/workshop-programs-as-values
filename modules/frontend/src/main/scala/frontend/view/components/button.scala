@@ -13,8 +13,12 @@ import japgolly.scalajs.react.vdom.all.*
 // val Button: ScalaFnComponent.Component[String, CtorType.PropsAndChildren] =
 val Button =
   ScalaFnComponent.withChildren[(String, Seq[TagMod])] { case ((lol, tags), children) =>
-    div(className := "bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-l",
+    button(
+      (Seq[TagMod](
+        className := "bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-l",
         lol,
         children
+      ) ++
+        tags)*
     )
   }

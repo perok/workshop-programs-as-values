@@ -2,10 +2,10 @@ import Dependencies._
 
 /* Global / onLoad ~= (_.compose(s => "dependencyUpdates" :: s)) */
 
-addCommandAlias("fix", "; scalafix ; Test / scalafix ; scalafmt ; scalafmtSbt")
+addCommandAlias("fix", "; scalafixAll ; scalafmt ; scalafmtSbt")
 addCommandAlias(
   "fixCheck",
-  "; scalafix --check ; Test / scalafix --check ; scalafmtCheck ; scalafmtSbtCheck"
+  "; scalafixAll --check ; scalafmtCheck ; scalafmtSbtCheck"
 )
 
 // Default settings
@@ -24,10 +24,7 @@ inThisBuild(
     // Disable Scaladoc
     Compile / packageDoc / publishArtifact := false,
     packageSrc / publishArtifact := false,
-    Compile / doc / sources := Seq.empty,
-
-    // flags
-    scalacOptions ++= Seq("-new-syntax", "-indent", "-source", "3.1")
+    Compile / doc / sources := Seq.empty
   )
 )
 
@@ -35,10 +32,16 @@ val commonSettings = Seq(
   // TODO this does not work for inThisBuild
   libraryDependencies ++= Seq(
     // Standard lib
-    "com.disneystreaming" %%% "weaver-cats" % "0.7.7" % Test,
-    "org.typelevel" %%% "cats-core" % "2.6.1",
-    "org.typelevel" %%% "cats-effect" % "3.2.9",
+    "com.disneystreaming" %%% "weaver-cats" % "0.7.7",
+    /* "com.disneystreaming" %%% "weaver-cats" % "0.7.7" % Test, */
+    "org.typelevel" %%% "cats-core" % "2.7.0",
+    "org.typelevel" %%% "cats-effect" % "3.3.0",
+    /* "org.typelevel" %%% "cats-effect" % "3.2.9", */
+    /* "com.armanbilge" %%% "bobcats" % "0.1-378731c", */
+    "org.typelevel" %% "kittens" % "3.0.0-M1",
     "co.fs2" %%% "fs2-core" % fs2Version,
+    "com.lihaoyi" %%% "pprint" % "0.6.6",
+    "org.tpolecat" %%% "sourcepos" % "1.0.1",
     // Communication
     "com.softwaremill.sttp.tapir" %%% "tapir-core" % tapirVersion,
     "com.softwaremill.sttp.tapir" %%% "tapir-json-circe" % tapirVersion,
@@ -51,14 +54,17 @@ val commonSettings = Seq(
     // "eu.timepit" %%% "refined-cats" % "0.9.27"
   ),
   testFrameworks += new TestFramework("weaver.framework.CatsEffect"),
+  scalacOptions ++= Seq("-new-syntax", "-indent", "-source", "future"),
   // Disable fatal warning from sbt-tpolecat plugin when developing
   Test / scalacOptions -= "-Xfatal-warnings",
   scalacOptions --= {
+
     if (!insideCI.value)
       Seq("-Xfatal-warnings", "-Ywarn-unused:imports")
     else
       Seq.empty
-  }
+  },
+  scalacOptions --= Seq("-explain-types", "-explain")
 )
 
 lazy val root = (project in file("."))
@@ -122,5 +128,20 @@ lazy val frontend = (project in file("modules/frontend"))
       "com.github.japgolly.scalajs-react" %%% "test" % scalaJsReact % Test
     ),
     scalaJSUseMainModuleInitializer := true,
-    scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.ESModule) }
+    /* scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.ESModule) } */
+    scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) }
+  )
+
+lazy val presentation = project
+  .in(file("presentation")) // important: it must not be docs/
+  /* .dependsOn(myproject) */
+  .enablePlugins(MdocPlugin)
+  .settings(
+    libraryDependencies ++= Seq(
+      "org.typelevel" %%% "cats-core" % "2.7.0",
+      "org.typelevel" %%% "cats-effect" % "3.3.0",
+      "org.typelevel" %% "kittens" % "3.0.0-M1",
+      "co.fs2" %%% "fs2-core" % fs2Version
+    ),
+    mdocExtraArguments += "--watch"
   )
