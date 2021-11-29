@@ -9,6 +9,7 @@ import fs2.Stream
 import fs2.concurrent.*
 
 import frontend.domain.model.BotSaying.*
+import frontend.infrastructure.model.*
 
 object PhoneBook:
   def create(persons: PersonBotActions*): Map[String, PersonBotActions] =
@@ -100,8 +101,12 @@ object PhoneBook:
         }
     }.mapInfo(mapper)
 
-  def task2(totalAge: Int, mapper: PersonInfo => PersonInfo = identity) =
-    val tAge = totalAge.toString
+  def task2(step1: (Int, Int, Int),
+            step2: (Int, Int, Int),
+            mapper: PersonInfo => PersonInfo = identity
+  ) =
+    val tAge1 = step1._1.toString
+    val tAge2 = step2._1.toString
     new PersonBotActions {
       def say(something: String, mouth: QueueSink[IO, BotSaying], doHangup: IO[Unit]) =
         something match {
@@ -114,7 +119,7 @@ object PhoneBook:
               ) >>
               mouth.offer(
                 TextJustShow(
-                  s"All my friends have their phone numbers between 49999 to 51000. Lucky you!"
+                  s"First, some of my friends have their phone numbers between ${step1._2} to ${step1._3}. Lucky you!"
                 )
               ) >>
               mouth.offer(
@@ -132,7 +137,17 @@ object PhoneBook:
                   s"And yeah, let me know the answer and I will give you a secret"
                 )
               )
-          case `tAge` =>
+          case `tAge1` =>
+            mouth.offer(TextJustShow(s"That sounds correct!")) >>
+              mouth.offer(
+                TextJustShow(
+                  s"Now, contact my friends have their phone numbers between ${step2._2} to ${step2._3}. "
+                )
+              ) >>
+              mouth.offer(TextJustShow(s"Then I will give you the secret")) >>
+              mouth.offer(TextJustShow(s"Btw, take a look at par* operators ;)"))
+
+          case `tAge2` =>
             mouth.offer(Text(s"47"))
           case a =>
             mouth.offer(Text(s"I don't understand \"$a\"")) >> doHangup
@@ -167,9 +182,14 @@ object Tasks:
                image = "https://gfx.nrk.no/erGQJYUnWUeKA9qtW0PqmAhV23-2xHOXBiSx-M6cNZZQ.jpg"
         )
       )
-      task2AllPeple = createMany(49999, 51001)
 
-      task2Start = task2(task2AllPeple.map(_._2).sum, _.copy(name = "Bob Ross"))
+      task2AllPeple = createMany(49900, 49910)
+      task2AllPeopleStep2 = createMany(49999, 49999 + 1000)
+
+      task2Start = task2((task2AllPeple.map(_._2).sum, 49900, 49910),
+                         (task2AllPeopleStep2.map(_._2).sum, 49999, 49999 + 1000),
+                         _.copy(name = "Bob Ross")
+      )
 
       somePeeps = List(
         f,

@@ -12,6 +12,7 @@ import scala.concurrent.duration.*
 import scala.scalajs.js.Math
 
 import frontend.domain.model.*
+import frontend.infrastructure.model.*
 
 object WorldImpl:
   def apply(phoneBook: Map[String, PersonBotActions],
@@ -57,12 +58,10 @@ class WorldImpl(speed: Ref[IO, WorldSpeed],
       uniqueId <- Unique[IO].unique.toResource
       mutex <- Semaphore[IO](1).toResource
       supervisor <- Supervisor[IO]
-      // lastSaying <- Ref[IO].of(Option.empty[FiberIO[Unit]]).toResource
       currentState <- SignallingRef[IO].of(Available).toResource
       _ <-
         currentState.discrete // TODO SuperVisor or background or Topic or MapRef (if SignallingRef)
           .evalMap(newState => worldState.update(_.updated(uniqueId, newState)))
-          // .evalMapChunk(newState => worldState.update(a => newState.foldLeft(a)((existing, n) => existing.updated(uniqueId, newState)))
           .compile
           .drain
           .background
@@ -74,37 +73,6 @@ class WorldImpl(speed: Ref[IO, WorldSpeed],
         currentState.set(Hangup) >>
           sleepStrict(1.seconds) >>
           currentState.set(Available)
-
-      // def sayNothing =
-      //   currentState.update {
-      //     case a: PhoneState.Talking =>
-      //       a.copy(botSaying = None)
-      //     case a => a
-      //   }
-
-      // // TODO Queue instead which is consumed by the view with a timer on each
-      // // (String, duration)
-      // // or can just be something that consumes this in World? Might be simpler
-      // // botSays
-      // def updateSayingOld(ths: BotSaying): IO[Unit] =
-      //   currentState.modify {
-      //     case a: PhoneState.Talking =>
-      //       val setNewLastSaying =
-      //         supervisor
-      //           .supervise(sleepStrict(2.seconds) >> sayNothing)
-      //           .flatMap(fiber => lastSaying.set(fiber.some))
-
-      //       def newTimed: IO[Unit] = lastSaying.modify {
-      //         case Some(existing) =>
-      //           Option.empty -> (existing.cancel >> newTimed)
-      //         case None =>
-      //           // TODO might be concurrency bugs here
-      //           (None, setNewLastSaying)
-      //       }.flatten
-
-      //       a.copy(botSaying = ths.some) -> newTimed
-      //     case a => (a, IO.unit)
-      //   }.flatten
 
       // https://infusion.media/content-marketing/how-to-calculate-reading-time/
       def sleepTimeText(in: String) =
@@ -195,7 +163,7 @@ class WorldImpl(speed: Ref[IO, WorldSpeed],
                       def size: IO[Int] = failOnlyIfEmpty >> talkingQueue.size
                     }
 
-                    val innerPerson = new Person with Communicating:
+                    val innerPerson = new PhoneInteraction with Communicating:
                       def hangup = performHangup
                       def say(something: String) =
                         failIfError >> playerSays(something.some) >>
@@ -223,6 +191,6 @@ class WorldImpl(speed: Ref[IO, WorldSpeed],
           other -> IO.raiseError(CallingEvent.Busy)
       }.flatten
 
-      def call(number: String): Resource[IO, Person] =
+      def call(number: String): Resource[IO, PhoneInteraction] =
         Resource.make(tryCall(number))(_.hangup)
     }
