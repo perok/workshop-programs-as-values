@@ -15,22 +15,21 @@ import scala.util.matching.Regex
 
 import frontend.domain.model.*
 
-class Task(world: World):
+/** Define expectations with https://disneystreaming.github.io/weaver-test/docs/expectations
+  */
+class Task(world: World) extends SimpleIOSuite:
   def introduction(log: Log[IO]) =
-    Helpers.ignore("Not Yet")
+    ignore("Not Yet")
 
   def task1(log: Log[IO]) =
-    Helpers.ignore("Not Yet")
+    ignore("Not Yet")
 
   def task2(log: Log[IO]) =
-    Helpers.ignore("Not Yet")
+    ignore("Not Yet")
 
   def task3(log: Log[IO]) =
-    Helpers.ignore("Not Yet")
+    ignore("Not Yet")
 
 object Helpers:
   def takeItAll(in: QueueSource[IO, String]): IO[List[String]] =
     Stream.repeatEval(in.tryTake).unNoneTerminate.compile.toList
-
-  def ignore(reason: String)(implicit pos: SourceLocation): IO[Nothing] =
-    IO.raiseError(new IgnoredException(Some(reason), pos))

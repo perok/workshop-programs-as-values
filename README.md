@@ -33,6 +33,7 @@ Use either Intellij or VSCode:
   - `npm install`
   - `npm run start`
 - Go to the file `modules/frontend/src/main/scala/frontend/Task.scala`
+- Avoid looking in `modules/frontend/src/main/scala/frontend/infrastructure` folder ;)
 - Enjoy
 
 ## Problems

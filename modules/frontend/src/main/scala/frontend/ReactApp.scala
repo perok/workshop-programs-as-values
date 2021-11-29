@@ -43,32 +43,32 @@ object ReactApp extends IOApp.Simple:
       phoneBook <- Tasks.playingSetup.toResource
       world <- WorldImpl(phoneBook, WorldSpeed.RealTime)
 
-      suite = new Task(world)
+      suite = new Task(world):
+        override def name: String = "Programs as values"
 
-      task = new SimpleIOSuite:
         override def maxParallelism = 1
 
         loggedTest("Introduction") { log =>
           resultFor("introduction") {
-            suite.introduction(log)
+            introduction(log)
           }
         }
 
         loggedTest("Task 1") { log =>
           resultFor("1") {
-            ignore("Not Yet")
+            task1(log)
           }
         }
 
         loggedTest("Task 2") { log =>
           resultFor("2") {
-            suite.task2(log)
+            task2(log)
           }
         }
 
         loggedTest("Task 3") { log =>
           resultFor("3") {
-            suite.task3(log)
+            task3(log)
           }
         }
 
@@ -89,7 +89,7 @@ object ReactApp extends IOApp.Simple:
 
       root = div(
         div(className := "grid grid-cols-2 divide-x divide-green-500",
-            SpecComponent(task),
+            SpecComponent(suite),
             WorldComponent(world)
         )
       )
