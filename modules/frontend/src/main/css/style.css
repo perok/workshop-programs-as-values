@@ -25,11 +25,33 @@ svg .rotate {
 /* https://projects.verou.me/bubbly/ */
 .speech-bubble {
 	position: relative;
-	background: #26a269;
+	background: rgba(59, 130, 246, 1);
 	border-radius: .4em;
-  height: min-content;
+	height: min-content;
 }
 .speech-bubble:after {
+	content: '';
+	position: absolute;
+	left: 0;
+	top: 50%;
+	width: 0;
+	height: 0;
+	border: 0.594em solid transparent;
+	border-right-color: rgba(59, 130, 246, 1);
+	border-left: 0;
+	border-bottom: 0;
+	margin-top: -0.297em;
+	margin-left: -0.594em;
+}
+
+
+.speech-bubble-readable {
+	position: relative;
+	background: #26a269;
+	border-radius: .4em;
+    height: min-content;
+}
+.speech-bubble-readable:after {
 	content: '';
 	position: absolute;
 	left: 0;

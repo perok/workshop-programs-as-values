@@ -65,26 +65,34 @@ val PhoneComponent: ScalaFnComponent.Component[PhoneState, CtorType.Props] =
           text
         ),
         image.map(i => img(className := "object-contain", src := i)).whenDefined,
-        saying
-          .map(tthis =>
+        saying.map { tthis =>
+          val clazzName = tthis match {
+            case BotSaying.Text(text) =>
+              h2(text)
+              "speech-bubble-readable"
+            case BotSaying.TextJustShow(text) =>
+              h2(text)
+              "speech-bubble"
+            case BotSaying.TextWithConfirmation(text, callback) =>
+              "speech-bubble"
+          }
+          div(
+            className := clazzName, // h-10
             div(
-              className := "speech-bubble", // h-10
-              div(
-                className := "p-2",
-                tthis match {
-                  case BotSaying.Text(text) => h2(text)
-                  // TODO different colors
-                  case BotSaying.TextJustShow(text) => h2(text)
-                  case BotSaying.TextWithConfirmation(text, callback) =>
-                    div(
-                      h2(text),
-                      Button("Ok", Seq(onClick --> callback.complete(()).void))()
-                    )
-                }
-              )
+              className := "p-2",
+              tthis match {
+                case BotSaying.Text(text) => h2(text)
+                // TODO different colors
+                case BotSaying.TextJustShow(text) => h2(text)
+                case BotSaying.TextWithConfirmation(text, callback) =>
+                  div(
+                    h2(text),
+                    Button("Ok", Seq(onClick --> callback.complete(()).void))()
+                  )
+              }
             )
           )
-          .whenDefined
+        }.whenDefined
       )
     }
 

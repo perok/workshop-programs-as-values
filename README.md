@@ -32,6 +32,7 @@ Use either Intellij or VSCode:
   - `cd modules/frontend`
   - `npm install`
   - `npm run start`
+  - The browser will now be opened with `localhost:8080`
 - Go to the file `modules/frontend/src/main/scala/frontend/Task.scala`
 - Avoid looking in `modules/frontend/src/main/scala/frontend/infrastructure` folder ;)
 - Enjoy

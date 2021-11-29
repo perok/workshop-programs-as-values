@@ -8,6 +8,8 @@ import cats.syntax.all.*
 import fs2.Stream
 import fs2.concurrent.*
 
+import scala.util.Random
+
 import frontend.domain.model.BotSaying.*
 import frontend.infrastructure.model.*
 
@@ -31,12 +33,18 @@ object PhoneBook:
         mouth.tryOffer(Text(something)).void
     }.mapInfo(mapper)
 
-  def hangupPerson(times: Int, mapper: PersonInfo => PersonInfo = identity) =
+  def hangupPerson(times: Int,
+                   sayOnSucces: List[String],
+                   mapper: PersonInfo => PersonInfo = identity
+  ) =
     for {
       count <- IO.ref(0)
     } yield new PersonBotActions {
       override def onPhoneCallStarted(doHangup: IO[Unit], mouth: QueueSink[IO, BotSaying]) =
-        count.updateAndGet(_ + 1).map(_ > times).ifM(IO.unit, doHangup)
+        count
+          .updateAndGet(_ + 1)
+          .map(_ > times)
+          .ifM(sayOnSucces.traverse(s => mouth.offer(Text(s))).start.void, doHangup)
 
       def say(something: String, mouth: QueueSink[IO, BotSaying], doHangup: IO[Unit]) = IO.unit
     }.mapInfo(mapper)
@@ -62,7 +70,7 @@ object PhoneBook:
               ) >>
               sayThis(
                 mouth,
-                "So, listen up. I need you to repeat the next thing I say (use listen and say)"
+                "So, listen up. I need you to repeat the next thing I say (use listen and say) (notice the color. Only green is readable)"
               ) >>
               mouth.offer(Text("Bananabread"))
           case "Bananabread" =>
@@ -83,7 +91,7 @@ object PhoneBook:
             mouth.offer(Text(s"Hello! The last thing I tell you is the thing to look for!")) >>
               sayThis(
                 mouth,
-                "But before that: Copy 8233891. This is the number to call in task 1. Ask \"how old are your friends?\". After this test is complet, add 'ignore(\"Done'\") >>' in the first line of this test to stop running this. "
+                "But before that: Copy 83423294. This is the number to call in task 1. He might hang up the phone a couple of times... After this test is complete, add 'ignore(\"Done'\") >>' in the first line of this test to stop running this. "
               ) >>
               mouth.offer(Text("SuperSecret1337"))
           case a =>
@@ -156,7 +164,6 @@ object PhoneBook:
 
   def createMany(from: Int, to: Int) =
     List.range(from, to).map { phoneNumber =>
-      import scala.util.Random
       val age = Random.between(18, 47)
       (new PersonBotActions {
          def say(something: String, mouth: QueueSink[IO, BotSaying], doHangup: IO[Unit]) =
@@ -183,6 +190,15 @@ object Tasks:
         )
       )
 
+      task1HangupPerson <- hangupPerson(
+        Random.between(3, 10),
+        List(
+          "Hello. Copy 8233891. This is the number to call in task 2. Ask \"how old are your friends?\"",
+          "My secret: fp<3"
+        ),
+        _.copy(name = "Mr. Retry", number = "83423294")
+      )
+
       task2AllPeple = createMany(49900, 49910)
       task2AllPeopleStep2 = createMany(49999, 49999 + 1000)
 
@@ -194,6 +210,7 @@ object Tasks:
       somePeeps = List(
         f,
         simplePerson(_.copy(number = "82326434")),
+        task1HangupPerson,
         mrIntro2(
           _.copy(
             number = "7823289",

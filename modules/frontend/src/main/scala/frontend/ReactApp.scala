@@ -54,21 +54,15 @@ object ReactApp extends IOApp.Simple:
           }
         }
 
-        loggedTest("Task 1") { log =>
+        loggedTest("Task 1 - Handling errors") { log =>
           resultFor("1") {
             task1(log)
           }
         }
 
-        loggedTest("Task 2") { log =>
+        loggedTest("Task 2 - Traverse") { log =>
           resultFor("2") {
             task2(log)
-          }
-        }
-
-        loggedTest("Task 3") { log =>
-          resultFor("3") {
-            task3(log)
           }
         }
 
@@ -79,8 +73,7 @@ object ReactApp extends IOApp.Simple:
           val key = task match {
             case "introduction" => "9fa0416b6d65fa74be1eace094de8a2c"
             case "1" => "9fa0416b6d65fa74be1eace094de8a2c"
-            case "2" => "a1d0c6e83f027327d8461063f4ac58a6"
-            case "3" => "9fa0416b6d65fa74be1eace094de8a2c"
+            case "2" => "f103399687b5252b2569fb6098d3c529"
           }
 
           val res = MD5(result)

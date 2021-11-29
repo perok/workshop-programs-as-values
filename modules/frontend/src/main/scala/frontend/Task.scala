@@ -17,7 +17,7 @@ import frontend.domain.model.*
 
 /** Define expectations with https://disneystreaming.github.io/weaver-test/docs/expectations
   */
-class Task(world: World) extends SimpleIOSuite:
+open class Task(world: World) extends SimpleIOSuite:
   def introduction(log: Log[IO]) =
     ignore("Not Yet")
 
