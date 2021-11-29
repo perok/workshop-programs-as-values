@@ -4,7 +4,6 @@
 
 Ensure that the following steps have been done:
 
-- Clone this repository and go the directory
 - Install Scala tools (`./cs setup` is enough): https://docs.scala-lang.org/scala3/getting-started.html
 - Install Node tools https://nodejs.org/en/download/
 
@@ -21,19 +20,18 @@ Use either Intellij or VSCode:
   - Recommended: format on save https://stackoverflow.com/a/54665086
 
 ## Developing
+- `git clone git@github.com:perok/workshop-programs-as-values.git`
+- Open in editor of choice :)
 
 - For Intellij:
   - View `SBT shell` tab and run `~fastLinkJS`. This will recompile to JS on file change
-  - Open terminal tab and run the following. This will run Webpack Dev Server.
-    - `cd modules/frontend`
-    - `npm install`
-    - `npm run start`
 - For VSCode:
   - Open terminal tab and run `sbt`, then `~fastLinkJS`. This will recompile to JS on file change
-  - Open terminal tab and run the following. This will run Webpack Dev Server.
-    - `cd modules/frontend`
-    - `npm install`
-    - `npm run start`
+ 
+- Open terminal tab and run the following. This will run Webpack Dev Server.
+  - `cd modules/frontend`
+  - `npm install`
+  - `npm run start`
 - Go to the file `modules/frontend/src/main/scala/frontend/Task.scala`
 - Enjoy
 
