@@ -76,7 +76,7 @@ class WorldImpl(speed: Ref[IO, WorldSpeed],
 
       // https://infusion.media/content-marketing/how-to-calculate-reading-time/
       def sleepTimeText(in: String) =
-        Math.max((in.split(" ").length / 200.0).toInt * 60.0, 1).seconds
+        Math.max((in.split(" ").length / 200.0).toInt * 60.0, 2).seconds
 
       def botSays(ths: Option[BotSaying]): IO[Unit] =
         currentState.modify {
