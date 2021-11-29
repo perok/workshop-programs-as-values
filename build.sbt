@@ -42,12 +42,6 @@ val commonSettings = Seq(
     "co.fs2" %%% "fs2-core" % fs2Version,
     "com.lihaoyi" %%% "pprint" % "0.6.6",
     "org.tpolecat" %%% "sourcepos" % "1.0.1",
-    // Communication
-    "com.softwaremill.sttp.tapir" %%% "tapir-core" % tapirVersion,
-    "com.softwaremill.sttp.tapir" %%% "tapir-json-circe" % tapirVersion,
-    // serialization
-    "io.circe" %%% "circe-core" % circeVersion,
-    "io.circe" %%% "circe-parser" % circeVersion,
     // Utilities
     "dev.optics" %%% "monocle-core" % monocleVersion,
     "eu.timepit" %%% "refined" % "0.9.27"
@@ -69,46 +63,16 @@ val commonSettings = Seq(
 
 lazy val root = (project in file("."))
   .disablePlugins(RevolverPlugin)
-  .aggregate(backend, frontend)
+  .aggregate(frontend)
   .settings(
-    name := "scala3-tapir-scalajs-react",
+    name := "workshop-programs-as-values",
     publish := {},
     publishLocal := {}
-  )
-
-lazy val shared = crossProject(JSPlatform, JVMPlatform)
-  .crossType(CrossType.Pure)
-  .in(file("modules/shared"))
-  .settings(commonSettings)
-
-lazy val backend = (project in file("modules/backend"))
-  .enablePlugins(JavaAppPackaging, DockerPlugin)
-  .dependsOn(shared.jvm)
-  .configs(IntegrationTest)
-  .settings(
-    Defaults.itSettings,
-    commonSettings,
-    libraryDependencies ++= backendDependencies,
-    Test / fork := true,
-    reStart / envVars := Map("APP_ENV" -> "development"),
-    reStart / javaOptions ++= Seq(
-      "-Dcats.effect.tracing.mode=full"
-    ),
-    Compile / resourceGenerators += (frontend / Compile / frontendBuild)
-    // This settings makes reStart to rebuild if a scala.js file changes on the client
-    /* watchSources ++= (frontend / watchSources).value, */
-    /* // Setup Docker */
-//    dockerBaseImage := "eclipse-temurin:11-jre-focal",
-//    dockerEnvVars := Map("TZ" -> "Europe/Oslo"),
-//    dockerExposedPorts ++= Seq(8080),
-//    Docker / packageName := "test",
-//    dockerRepository := Some("perok")
   )
 
 lazy val frontend = (project in file("modules/frontend"))
   .enablePlugins(ScalaJSPlugin, NpmPlugin)
   .disablePlugins(RevolverPlugin)
-  .dependsOn(shared.js)
   .settings(
     commonSettings,
     libraryDependencies ++= Seq(
