@@ -11,6 +11,7 @@ trait NpmKeys {
   lazy val frontendBuild = TaskKey[Seq[File]]("frontendBuild", "Build the frontend")
 }
 
+// TODO yarnplugin
 object NpmPlugin extends AutoPlugin {
   override val trigger: PluginTrigger = noTrigger
   override val requires: Plugins = ScalaJSPlugin
