@@ -8,12 +8,24 @@
 !.yarn/sdks
 !.yarn/versions
 
-**/target/
-
 node_modules/
 dist/
 
 .vscode
+
+
+project/project/
+project/metals.sbt
+
+dist/*
+target/
+lib_managed/
+src_managed/
+project/boot/
+project/plugins/project/
+.history
+.cache
+.lib/
 
 # Created by https://www.toptal.com/developers/gitignore/api/scala,vim,intellij,visualstudiocode,git,sbt,bloop
 # Edit at https://www.toptal.com/developers/gitignore?templates=scala,vim,intellij,visualstudiocode,git,sbt,bloop
