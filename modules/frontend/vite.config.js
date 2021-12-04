@@ -5,7 +5,6 @@ const path = require('path')
 export default defineConfig(({ command, mode }) => {
   // TODO difference between command === 'server'
   // TODO configure index.html with correct scala.js build file
-  // TODO configure tailwind purge with correct scala.js build file
   return {
     resolve: {
       alias: {
