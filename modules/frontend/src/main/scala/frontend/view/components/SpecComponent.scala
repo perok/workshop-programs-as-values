@@ -16,7 +16,7 @@ import scala.concurrent.duration.*
 import scala.scalajs.js
 import scala.scalajs.js.annotation.JSImport
 
-@JSImport("ansi-to-html", JSImport.Default)
+@JSImport("ansi-to-html", JSImport.Namespace)
 @js.native
 class Convert extends js.Object {
   def toHtml(in: String, newline: Boolean): String = js.native

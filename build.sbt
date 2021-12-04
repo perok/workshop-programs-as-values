@@ -92,8 +92,7 @@ lazy val frontend = (project in file("modules/frontend"))
       "com.github.japgolly.scalajs-react" %%% "test" % scalaJsReact % Test
     ),
     scalaJSUseMainModuleInitializer := true,
-    /* scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.ESModule) } */
-    scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) }
+    scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.ESModule) }
   )
 
 lazy val presentation = project
