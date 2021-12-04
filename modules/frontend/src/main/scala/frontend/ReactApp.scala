@@ -18,7 +18,7 @@ import frontend.infrastructure.*
 import frontend.view.components.*
 import frontend.infrastructure.*
 
-@JSImport("Sources/css/style.css", JSImport.Default)
+@JSImport("@css-sources/style.css", JSImport.Default)
 @js.native
 object assets extends js.Object
 

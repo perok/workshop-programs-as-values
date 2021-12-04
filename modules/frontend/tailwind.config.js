@@ -1,6 +1,9 @@
 module.exports = {
-  // TODO what is purge setup here, is this correct?
-  // purge: ['./dist/*.html'],
+  mode: 'jit',
+  purge: [
+    'index.html',
+    './target/scala-3.1.0/frontend-fastopt/main.js'
+  ],
   darkMode: false, // or 'media' or 'class'
   theme: {
     extend: {},
